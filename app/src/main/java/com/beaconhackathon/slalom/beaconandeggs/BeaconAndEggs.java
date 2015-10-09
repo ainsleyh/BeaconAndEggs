@@ -4,11 +4,17 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.beaconhackathon.slalom.beaconandeggs.Models.Category;
+import com.beaconhackathon.slalom.beaconandeggs.Models.GroceryCart;
+import com.beaconhackathon.slalom.beaconandeggs.Models.Item;
+
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class BeaconAndEggs extends Activity {
 
@@ -17,7 +23,9 @@ public class BeaconAndEggs extends Activity {
     private ArrayAdapter<String> groceryListAdapter;
 
     private ArrayList<String> groceryListItems;
+    private GroceryCart groceryCart;
 
+    private List<Category> availableCategories;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +37,10 @@ public class BeaconAndEggs extends Activity {
         groceryListItems = fillItemList();
         groceryListAdapter = new ArrayAdapter<>(this, R.layout.grocery_list_item, groceryListItems);
         groceryListView.setAdapter(groceryListAdapter);
+
+        // TODO populate categories with json data & remove this
+        availableCategories = new ArrayList<Category>();
+        groceryCart = new GroceryCart();
     }
 
     @Override
@@ -63,5 +75,73 @@ public class BeaconAndEggs extends Activity {
                 "Cheese",
                 "Yogurt"
         }));
+    }
+
+    /**
+     * Called when the Done button is Click
+     *
+     * @param view the Buttone
+     */
+    public void onClickDone(View view) {
+
+        // locate the categories of the items in the list
+        List<Category> selectedCategories = determineCategories();
+
+        // TODO change view? and then begin Dijkstra's
+
+        getLocationOfItems();
+    }
+
+    /**
+     * Returns the categories of the items in the listview
+     *
+     * @return A list of categories
+     */
+    private List<Category> determineCategories() {
+
+        List<Category> selectedCategories = new ArrayList<Category>();
+
+        for (Item item : groceryCart.items) {
+            Category itemCategory = null;
+            for (Category category : availableCategories) {
+                if (category.id == item.categoryID) {
+                    itemCategory = category;
+                    break;
+                }
+            }
+
+            if (!selectedCategories.contains(itemCategory))
+                selectedCategories.add(itemCategory);
+        }
+
+        return selectedCategories;
+    }
+
+    /**
+     * Determines the closest beacon with an item & category on the listview
+     */
+    public void getLocationOfItems() {
+
+        // what is the closest beacon with a selected category?
+        /*List<Beacon> list = new ArrayList<Beacon>();
+        Beacon closestBeacon = null;
+        Map<Beacon, List<Category>> beacons = new HashMap<Beacon, List<Category>>();
+        if (!list.isEmpty()) {
+            // grab the closest beacon with a category selected
+            BEACONLOOP: for (Beacon beacon: list) {
+
+                List<Category> beaconCategories = beacons.get(beacon);
+
+                for (Category cat: beaconCategories) {
+                    if (selectedCategories.contains(cat)) {
+                        closestBeacon = beacon;
+                        break BEACONLOOP;
+                    }
+                }
+            }
+        }*/
+
+        // now we have the closest beacon, highlight on map
+        // mark as visited and repeat
     }
 }
