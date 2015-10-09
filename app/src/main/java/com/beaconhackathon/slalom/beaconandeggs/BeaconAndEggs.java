@@ -3,20 +3,83 @@ package com.beaconhackathon.slalom.beaconandeggs;
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.RemoteException;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.beaconhackathon.slalom.beaconandeggs.Models.Category;
+import com.beaconhackathon.slalom.beaconandeggs.Models.GroceryCart;
+import com.beaconhackathon.slalom.beaconandeggs.Models.Item;
 import com.estimote.sdk.Beacon;
 import com.estimote.sdk.BeaconManager;
 import com.estimote.sdk.Region;
 import com.estimote.sdk.Utils;
 
+import java.util.ArrayList;
+import java.util.Dictionary;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class BeaconAndEggs extends Activity {
 
     private BeaconManager beaconManager;
+    private GroceryCart groceryCart;
+    private List<Category> categories;
+
+    /*public void getLocationOfItems() {
+
+        // locate the categories & add them to list
+        List<Category> selectedCategories = new ArrayList<Category>();
+
+        for (Item item : groceryCart.items) {
+            Category itemCategory = null;
+            for (Category category : categories) {
+                if (category.id == item.categoryID) {
+                    itemCategory = category;
+                    break;
+                }
+            }
+
+            if (!selectedCategories.contains(itemCategory))    {
+                selectedCategories.add(itemCategory);
+            }
+        }
+
+        // what is the closest beacon?
+        //(in onBeaconsDiscovered)
+        List<Beacon> list = new ArrayList<Beacon>();
+        Beacon closestBeacon = null;
+        Map<Beacon, List<Category>> beacons = new HashMap<Beacon, List<Category>>();
+        if (!list.isEmpty()) {
+            // grab the closest beacon with a category selected
+            BEACONLOOP: for (Beacon beacon: list) {
+
+                List<Category> beaconCategories = beacons.get(beacon);
+
+                for (Category cat: beaconCategories) {
+                    if (selectedCategories.contains(cat)) {
+                        closestBeacon = beacon;
+                        break BEACONLOOP;
+                    }
+                }
+            }
+        }
+
+        // now we have the closest beacon, highlight on map
+        // mark as visited
+    }*/
+
+/* Group the items by categories
+Locate the categories on the store map
+Using Dijkstra’s algorithm, calculate the beacon ranges of the categories from the user’s current location and select the closest beacon
+if (all out of range?) use store map coordinate
+Mark the item states as checked for the category
+Repeat #3 to find the next closest proximity beacon */    /* Group the items by categories
+Locate the categories on the store map
+Using Dijkstra’s algorithm, calculate the beacon ranges of the categories from the user’s current location and select the closest beacon
+if (all out of range?) use store map coordinate
+Mark the item states as checked for the category
+Repeat #3 to find the next closest proximity beacon */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
