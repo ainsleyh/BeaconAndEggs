@@ -1,6 +1,7 @@
 package com.beaconhackathon.slalom.beaconandeggs;
 
 import android.app.Activity;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -13,33 +14,38 @@ import com.beaconhackathon.slalom.beaconandeggs.Models.GroceryCart;
 import com.beaconhackathon.slalom.beaconandeggs.Models.Item;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 public class BeaconAndEggs extends Activity {
 
-    private ListView groceryListView;
-
-    private ArrayAdapter<String> groceryListAdapter;
-
-    private ArrayList<String> groceryListItems;
     private GroceryCart groceryCart;
 
     private List<Category> availableCategories;
+
+    private UserItemListDatabaseHelper userItemListDB;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_beacon_and_eggs);
 
-        groceryListView = (ListView) findViewById(R.id.groceryListView);
+        userItemListDB = new UserItemListDatabaseHelper(getApplicationContext());
 
-        groceryListItems = fillItemList();
-        groceryListAdapter = new ArrayAdapter<>(this, R.layout.grocery_list_item, groceryListItems);
+        ListView groceryListView = (ListView) findViewById(R.id.groceryListView);
+
+        ArrayList<String> groceryListItems = fillItemList();
+
+        ArrayAdapter<String> groceryListAdapter = new ArrayAdapter<>(
+                this,
+                R.layout.grocery_list_item,
+                groceryListItems
+        );
+
         groceryListView.setAdapter(groceryListAdapter);
 
         // TODO populate categories with json data & remove this
-        availableCategories = new ArrayList<Category>();
+        availableCategories = new ArrayList<>();
         groceryCart = new GroceryCart();
     }
 
@@ -66,15 +72,16 @@ public class BeaconAndEggs extends Activity {
     }
 
     private ArrayList<String> fillItemList() {
-        return new ArrayList<>(Arrays.asList(new String[]{
-                "Milk",
-                "Eggs",
-                "Chicken",
-                "Fuji Apples",
-                "Rice",
-                "Cheese",
-                "Yogurt"
-        }));
+        LinkedList<String> items = new LinkedList<>();
+        Cursor itemsCursor = userItemListDB.getAllItems(
+                userItemListDB.getReadableDatabase()
+        );
+        itemsCursor.moveToFirst();
+        while (!itemsCursor.isAfterLast()) {
+            items.add(itemsCursor.getString(0));
+            itemsCursor.moveToNext();
+        }
+        return new ArrayList<>(items);
     }
 
     /**

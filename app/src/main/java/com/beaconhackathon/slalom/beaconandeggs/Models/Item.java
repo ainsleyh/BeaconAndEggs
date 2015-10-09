@@ -11,6 +11,11 @@ import java.util.UUID;
 public class Item {
 
     /**
+     * The name
+     */
+    public String name;
+
+    /**
      * The id
      */
     public UUID id;
