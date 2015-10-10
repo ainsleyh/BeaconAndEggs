@@ -1,6 +1,7 @@
 package com.beaconhackathon.slalom.beaconandeggs;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.Menu;
@@ -96,7 +97,10 @@ public class BeaconAndEggs extends Activity {
 
         // TODO change view? and then begin Dijkstra's
 
-        getLocationOfItems();
+        Intent intent = new Intent(BeaconAndEggs.this, MapLocator.class);
+        startActivity(intent);
+
+        //getLocationOfItems();
     }
 
     /**
