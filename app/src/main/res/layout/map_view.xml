@@ -12,9 +12,10 @@
 
     <EditText
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="256dp"
         android:id="@+id/editText"
         android:layout_gravity="center_horizontal"
+        android:background="@android:color/transparent"
         android:text="Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. "
         android:clickable="false"
         android:cursorVisible="false"
