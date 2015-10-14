@@ -28,6 +28,7 @@ public class Item {
     /**
      * The Item's nutrition facts
      * //  TODO Do we want this to be a string?
+     * // We might prefer this to be its own entity but can probably be a string for now.
      */
     public String nutritionFacts;
 
@@ -38,6 +39,7 @@ public class Item {
 
     /**
      * The Recipes the item can be found in
+     * todo is this needed with the recipe api?
      */
     public List<Recipe> recipes;
 
