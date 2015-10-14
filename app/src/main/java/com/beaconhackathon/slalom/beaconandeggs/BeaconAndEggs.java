@@ -17,6 +17,7 @@ import com.beaconhackathon.slalom.beaconandeggs.Models.Item;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 
 public class BeaconAndEggs extends Activity {
 
@@ -89,8 +90,10 @@ public class BeaconAndEggs extends Activity {
      */
     public void onClickDone(View view) {
 
-        /*Bundle b = new Bundle();
-        b.putParcelable("groceryCart", groceryCart);*/
+        /*UUID id = UUID.randomUUID();
+        UUID categoryId = UUID.fromString("01a43abb-62ea-42f3-9daf-4d25c7940f5b");
+        Item eggs = new Item("Eggs", id, categoryId);
+        this.groceryCart.items.add(eggs);*/
 
         // change view to MapLocator
         Intent intent = new Intent(BeaconAndEggs.this, MapLocator.class);

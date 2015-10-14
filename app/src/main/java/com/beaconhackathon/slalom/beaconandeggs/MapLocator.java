@@ -3,8 +3,6 @@ package com.beaconhackathon.slalom.beaconandeggs;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Window;
-import android.view.WindowManager;
 
 import com.beaconhackathon.slalom.beaconandeggs.Models.Category;
 import com.beaconhackathon.slalom.beaconandeggs.Models.GroceryCart;
@@ -12,6 +10,7 @@ import com.beaconhackathon.slalom.beaconandeggs.Models.Item;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by ainsleyherndon on 10/9/15.
@@ -34,6 +33,11 @@ public class MapLocator extends Activity {
 
         // TODO populate with json data
         availableCategories = new ArrayList<>();
+        /*Category testCategory = new Category();
+        testCategory.id = UUID.fromString("01a43abb-62ea-42f3-9daf-4d25c7940f5b");
+        testCategory.name = "Dairy";
+        testCategory.beaconId = UUID.randomUUID();
+        availableCategories.add(testCategory);*/
 
         // locate the categories of the items in the list
         List<Category> selectedCategories = determineCategories();
@@ -58,7 +62,7 @@ public class MapLocator extends Activity {
         for (Item item : groceryCart.items) {
             Category itemCategory = null;
             for (Category category : availableCategories) {
-                if (category.id == item.categoryID) {
+                if (category.id.equals(item.categoryID)) {
                     itemCategory = category;
                     break;
                 }
