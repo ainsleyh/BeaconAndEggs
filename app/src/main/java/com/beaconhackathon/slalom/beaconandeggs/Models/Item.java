@@ -1,5 +1,6 @@
 package com.beaconhackathon.slalom.beaconandeggs.Models;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.UUID;
 
@@ -8,7 +9,18 @@ import java.util.UUID;
  *
  * Created by ainsleyherndon on 10/5/15.
  */
-public class Item {
+public class Item implements Serializable {
+
+    public Item() {
+        this.state = State.Available;
+    }
+
+    public Item(String name, UUID id, UUID categoryID) {
+        this.state = State.Available;
+        this.name = name;
+        this.id = id;
+        this.categoryID = categoryID;
+    }
 
     /**
      * The name
