@@ -1,13 +1,19 @@
 package com.beaconhackathon.slalom.beaconandeggs;
 
 import android.app.Activity;
+import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.beaconhackathon.slalom.beaconandeggs.Models.Category;
 import com.beaconhackathon.slalom.beaconandeggs.Models.GroceryCart;
@@ -17,6 +23,9 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.daimajia.swipe.SwipeLayout;
+import com.daimajia.swipe.util.Attributes;
+
 public class BeaconAndEggs extends Activity {
 
     private GroceryCart groceryCart;
@@ -25,6 +34,10 @@ public class BeaconAndEggs extends Activity {
 
     private UserItemListDatabaseHelper userItemListDB;
 
+    private ListViewAdapter mListViewAdapter;
+
+    private Context mContext = this;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,24 +45,65 @@ public class BeaconAndEggs extends Activity {
 
         userItemListDB = new UserItemListDatabaseHelper(getApplicationContext());
 
-        ListView groceryListView = (ListView) findViewById(R.id.groceryListView);
+        final ListView groceryListView = (ListView) findViewById(R.id.groceryListView);
 
-        ArrayList<String> groceryListItems = fillItemList();
+        mListViewAdapter = new ListViewAdapter(this);
 
-        ArrayAdapter<String> groceryListAdapter = new ArrayAdapter<>(
-                this,
-                R.layout.grocery_list_item,
-                groceryListItems
-        );
+        groceryListView.setAdapter(mListViewAdapter);
 
-        groceryListView.setAdapter(groceryListAdapter);
+        mListViewAdapter.setMode(Attributes.Mode.Single);
+
+        groceryListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                ((SwipeLayout) (groceryListView.getChildAt(
+                        position - groceryListView.getFirstVisiblePosition()))).open(true);
+            }
+        });
+        groceryListView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                Log.e("ListView", "OnTouch");
+                return false;
+            }
+        });
+        groceryListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                Toast.makeText(mContext, "OnItemLongClickListener", Toast.LENGTH_SHORT).show();
+                return true;
+            }
+        });
+        groceryListView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+                Log.e("ListView", "onScrollStateChanged");
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+
+            }
+        });
+
+        groceryListView.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Log.e("ListView", "onItemSelected:" + position);
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                Log.e("ListView", "onNothingSelected:");
+            }
+        });
 
         // TODO populate categories with json data & remove this
         availableCategories = new ArrayList<>();
-        groceryCart = new GroceryCart();
+        groceryCart= new GroceryCart();
+
     }
 
-    @Override
+        @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_beacon_and_eggs, menu);
