@@ -2,6 +2,7 @@ package com.beaconhackathon.slalom.beaconandeggs;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,7 +12,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -91,6 +91,7 @@ public class BeaconAndEggs extends Activity {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 Log.e("ListView", "onItemSelected:" + position);
             }
+
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
                 Log.e("ListView", "onNothingSelected:");
@@ -103,7 +104,7 @@ public class BeaconAndEggs extends Activity {
 
     }
 
-        @Override
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_beacon_and_eggs, menu);
@@ -141,16 +142,18 @@ public class BeaconAndEggs extends Activity {
     /**
      * Called when the Done button is Click
      *
-     * @param view the Buttone
+     * @param view the Button
      */
     public void onClickDone(View view) {
+        /*UUID id = UUID.randomUUID();
+        UUID categoryId = UUID.fromString("01a43abb-62ea-42f3-9daf-4d25c7940f5b");
+        Item eggs = new Item("Eggs", id, categoryId);
+        this.groceryCart.items.add(eggs);*/
 
-        // locate the categories of the items in the list
-        List<Category> selectedCategories = determineCategories();
-
-        // TODO change view? and then begin Dijkstra's
-
-        getLocationOfItems();
+        // change view to MapLocator
+        Intent intent = new Intent(BeaconAndEggs.this, MapLocator.class);
+        intent.putExtra("groceryCart", this.groceryCart);
+        startActivity(intent);
     }
 
     /**

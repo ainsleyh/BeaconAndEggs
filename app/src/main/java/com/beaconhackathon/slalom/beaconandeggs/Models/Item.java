@@ -1,5 +1,6 @@
 package com.beaconhackathon.slalom.beaconandeggs.Models;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.UUID;
 
@@ -8,7 +9,18 @@ import java.util.UUID;
  *
  * Created by ainsleyherndon on 10/5/15.
  */
-public class Item {
+public class Item implements Serializable {
+
+    public Item() {
+        this.state = State.Available;
+    }
+
+    public Item(String name, UUID id, UUID categoryID) {
+        this.state = State.Available;
+        this.name = name;
+        this.id = id;
+        this.categoryID = categoryID;
+    }
 
     /**
      * The name
@@ -28,6 +40,7 @@ public class Item {
     /**
      * The Item's nutrition facts
      * //  TODO Do we want this to be a string?
+     * // We might prefer this to be its own entity but can probably be a string for now.
      */
     public String nutritionFacts;
 
@@ -38,6 +51,7 @@ public class Item {
 
     /**
      * The Recipes the item can be found in
+     * todo is this needed with the recipe api?
      */
     public List<Recipe> recipes;
 
