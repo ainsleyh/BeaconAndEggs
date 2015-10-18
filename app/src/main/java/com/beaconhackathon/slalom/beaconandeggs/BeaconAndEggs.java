@@ -10,19 +10,25 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import org.json.*;
 
 import com.beaconhackathon.slalom.beaconandeggs.Models.Category;
 import com.beaconhackathon.slalom.beaconandeggs.Models.GroceryCart;
 import com.beaconhackathon.slalom.beaconandeggs.Models.Item;
+import com.beaconhackathon.slalom.beaconandeggs.Models.State;
+import com.beaconhackathon.slalom.beaconandeggs.Models.Store;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.UUID;
 
 public class BeaconAndEggs extends Activity {
 
     private GroceryCart groceryCart;
+
+    private Store selectedStore;
 
     private UserItemListDatabaseHelper userItemListDB;
 
@@ -45,7 +51,9 @@ public class BeaconAndEggs extends Activity {
 
         groceryListView.setAdapter(groceryListAdapter);
 
-        // TODO populate categories with json data & remove this
+        // populate available items in the store, and categories
+        populateAvailableCategories();
+
         groceryCart = new GroceryCart();
     }
 
@@ -86,6 +94,69 @@ public class BeaconAndEggs extends Activity {
     }
 
     /**
+     * Populates the list of available Categories and Items from the
+     * json in an Assets file
+     */
+    private void populateAvailableCategories() {
+
+        selectedStore = new Store();
+
+        try {
+            String json = loadJSONFromAsset();
+            JSONObject obj = new JSONObject(json);
+
+            JSONArray arr = obj.getJSONArray("categories");
+            for (int i = 0; i < arr.length(); i++)
+            {
+                Category cat = new Category();
+                cat.name = arr.getJSONObject(i).getString("name");
+                cat.id = UUID.fromString(arr.getJSONObject(i).getString("id"));
+                cat.beaconId = UUID.fromString(arr.getJSONObject(i).getString("beaconId"));
+                cat.aisleNum = arr.getJSONObject(i).getInt("aisleNum");
+
+                JSONArray items = arr.getJSONObject(i).getJSONArray("items");
+                for (int x = 0; x < items.length(); x++)
+                {
+                    Item item = new Item();
+                    item.name = items.getJSONObject(x).getString("name");
+                    item.id = UUID.fromString(items.getJSONObject(x).getString("id"));
+                    item.nutritionFacts = items.getJSONObject(x).getString("nutritionFacts");
+                    item.state = State.Available;
+
+                    cat.items.add(item);
+                }
+
+                selectedStore.availableCategories.add(cat);
+            }
+
+        } catch (Exception ex) {
+
+        }
+
+    }
+
+    /**
+     * Loads the Json from the Category json file
+     *
+     * @return the json from the file
+     */
+    public String loadJSONFromAsset() {
+        String json = null;
+        try {
+            InputStream is = this.getAssets().open("data.json");
+            int size = is.available();
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+            json = new String(buffer, "UTF-8");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+        return json;
+    }
+
+    /**
      * Called when the Done button is Click
      *
      * @param view the Button
@@ -100,6 +171,7 @@ public class BeaconAndEggs extends Activity {
         // change view to MapLocator
         Intent intent = new Intent(BeaconAndEggs.this, MapLocator.class);
         intent.putExtra("groceryCart", this.groceryCart);
+        intent.putExtra("store", this.selectedStore);
         startActivity(intent);
     }
 

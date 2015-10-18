@@ -1,5 +1,6 @@
 package com.beaconhackathon.slalom.beaconandeggs.Models;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -11,7 +12,7 @@ import java.util.UUID;
  *
  * Created by ainsleyherndon on 10/5/15.
  */
-public class Category {
+public class Category implements Serializable {
 
     public Category() {
         items = new ArrayList<Item>();
