@@ -3,5 +3,9 @@
     tools:context="com.beaconhackathon.slalom.beaconandeggs.ItemSearch">
     <item android:id="@+id/action_settings" android:title="@string/action_settings"
         android:orderInCategory="100" android:showAsAction="never" />
-    <SearchView android:id="@+id/search" android:title="Search" />
+    <item android:id="@+id/search"
+        android:title="@string/search"
+        android:icon="@android:drawable/ic_menu_search"
+        android:showAsAction="collapseActionView|ifRoom"
+        android:actionViewClass="android.widget.SearchView" />
 </menu>

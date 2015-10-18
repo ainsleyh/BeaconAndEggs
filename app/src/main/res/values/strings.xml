@@ -8,4 +8,6 @@
     <string name="search">Search</string>
     <string name="search_hint">Hint</string>
     <string name="search_placeholder">Milk, Eggs, Bacon...</string>
+    <string name="add">Add</string>
+    <string name="title_activity_searchable">SearchableActivity</string>
 </resources>
