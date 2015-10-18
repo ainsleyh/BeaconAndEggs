@@ -55,6 +55,13 @@ public class BeaconAndEggs extends Activity {
         populateAvailableCategories();
 
         groceryCart = new GroceryCart();
+
+        //See if the new items are being added to the list
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            Item item = (Item) extras.get("item");
+            groceryCart.items.add(item);
+        }
     }
 
     @Override

@@ -11,7 +11,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.SimpleAdapter;
@@ -49,11 +51,15 @@ public class ItemSearch extends ListActivity {
             getItems();
         }
 
-        // Get the intent, verify the action and get the query
+        //See if the query string was added to the intent
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             String query = extras.getString("query");
             searchItems(query);
+        } else {
+            adapter = new ItemViewAdapter(context, itemList);
+
+            setListAdapter(adapter);
         }
     }
 
@@ -70,6 +76,13 @@ public class ItemSearch extends ListActivity {
         adapter = new ItemViewAdapter(context, results);
 
         setListAdapter(adapter);
+    }
+
+    public void returnAddedItem(View view) {
+        int position = getListView().getPositionForView((LinearLayout) view.getParent());
+        Item item = (Item)adapter.getItem(position);
+        Intent myintent = new Intent(ItemSearch.this, BeaconAndEggs.class).putExtra("item", item);
+        startActivity(myintent);
     }
 
     private void getItems() {

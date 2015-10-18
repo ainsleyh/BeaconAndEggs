@@ -83,7 +83,7 @@ public class Searchable extends Activity {
     }
 
     private void doMySearch(String query) {
-        Intent myintent=new Intent(Searchable.this, ItemSearch.class).putExtra("query", query);
+        Intent myintent = new Intent(Searchable.this, ItemSearch.class).putExtra("query", query);
         startActivity(myintent);
 
     }

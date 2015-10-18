@@ -7,6 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.EditText;
+import android.widget.NumberPicker;
 import android.widget.TextView;
 
 import com.beaconhackathon.slalom.beaconandeggs.Models.Category;
@@ -50,25 +52,31 @@ public class ItemViewAdapter extends BaseAdapter {
         MyViewHolder mViewHolder;
 
         if (convertView == null) {
-            convertView = inflater.inflate(R.layout.item_search, parent, false);
+            convertView = inflater.inflate(R.layout.items, parent, false);
             mViewHolder = new MyViewHolder(convertView);
             convertView.setTag(mViewHolder);
         } else {
             mViewHolder = (MyViewHolder) convertView.getTag();
         }
+        View v = inflater.inflate(R.layout.items, parent, false);
 
         Item currentItem = getItem(position);
 
         mViewHolder.name.setText(currentItem.name);
+        mViewHolder.quantity.setValue(currentItem.quantity);
+        mViewHolder.position = position;
 
         return convertView;
     }
 
     private class MyViewHolder {
         TextView name;
+        NumberPicker quantity;
+        int position;
 
         public MyViewHolder(View item) {
             name = (TextView) item.findViewById(R.id.item);
+            quantity = (NumberPicker) item.findViewById(R.id.quantity);
         }
     }
 }
