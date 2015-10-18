@@ -7,6 +7,7 @@ import android.os.Bundle;
 import com.beaconhackathon.slalom.beaconandeggs.Models.Category;
 import com.beaconhackathon.slalom.beaconandeggs.Models.GroceryCart;
 import com.beaconhackathon.slalom.beaconandeggs.Models.Item;
+import com.beaconhackathon.slalom.beaconandeggs.Models.Store;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +20,7 @@ public class MapLocator extends Activity {
 
     private GroceryCart groceryCart;
 
-    private List<Category> availableCategories;
+    private Store store;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,13 +32,7 @@ public class MapLocator extends Activity {
         Intent intent = this.getIntent();
         groceryCart = (GroceryCart) intent.getSerializableExtra("groceryCart");
 
-        // TODO populate with json data
-        availableCategories = new ArrayList<>();
-        /*Category testCategory = new Category();
-        testCategory.id = UUID.fromString("01a43abb-62ea-42f3-9daf-4d25c7940f5b");
-        testCategory.name = "Dairy";
-        testCategory.beaconId = UUID.randomUUID();
-        availableCategories.add(testCategory);*/
+        store = (Store) intent.getSerializableExtra("store");
 
         // locate the categories of the items in the list
         List<Category> selectedCategories = determineCategories();
@@ -61,7 +56,7 @@ public class MapLocator extends Activity {
 
         for (Item item : groceryCart.items) {
             Category itemCategory = null;
-            for (Category category : availableCategories) {
+            for (Category category : store.availableCategories) {
                 if (category.id.equals(item.categoryID)) {
                     itemCategory = category;
                     break;
