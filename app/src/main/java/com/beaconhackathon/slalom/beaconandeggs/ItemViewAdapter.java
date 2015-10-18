@@ -19,12 +19,12 @@ import java.util.List;
  * Created by lucy on 10/14/15.
  */
 public class ItemViewAdapter extends BaseAdapter {
-    private List<Category> itemList;
+    private List<Item> itemList;
     LayoutInflater inflater;
     Context context;
 
 
-    public ItemViewAdapter(Context context, List<Category> myList) {
+    public ItemViewAdapter(Context context, List<Item> myList) {
         this.itemList = myList;
         this.context = context;
         inflater = LayoutInflater.from(this.context);
@@ -36,7 +36,7 @@ public class ItemViewAdapter extends BaseAdapter {
     }
 
     @Override
-    public Category getItem(int position) {
+    public Item getItem(int position) {
         return itemList.get(position);
     }
 
@@ -57,9 +57,9 @@ public class ItemViewAdapter extends BaseAdapter {
             mViewHolder = (MyViewHolder) convertView.getTag();
         }
 
-        Category currentCategory = getItem(position);
+        Item currentItem = getItem(position);
 
-        mViewHolder.name.setText(currentCategory.name);
+        mViewHolder.name.setText(currentItem.name);
 
         return convertView;
     }

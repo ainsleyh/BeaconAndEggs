@@ -83,25 +83,7 @@ public class Searchable extends Activity {
     }
 
     private void doMySearch(String query) {
-
-
-        Writer writer = new StringWriter();
-        char[] buffer = new char[1024];
-        try (InputStream is = getResources().openRawResource(R.raw.data)) {
-            Reader reader = new BufferedReader(new InputStreamReader(is));
-            int n;
-            while ((n = reader.read(buffer)) != -1) {
-                writer.write(buffer, 0, n);
-            }
-        } catch (IOException e) {
-            //todo don't know what to do
-        }
-
-        String jsonString = writer.toString();
-
-
-
-        Intent myintent=new Intent(Searchable.this, ItemSearch.class).putExtra("json", jsonString);
+        Intent myintent=new Intent(Searchable.this, ItemSearch.class).putExtra("query", query);
         startActivity(myintent);
 
     }

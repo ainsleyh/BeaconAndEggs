@@ -35,8 +35,7 @@ import com.google.gson.GsonBuilder;
 public class ItemSearch extends ListActivity {
 
     private static final String LOG_TAG = "ItemSearchActivity";
-    private List<Item> itemList = new ArrayList<Item>();
-    //private ListView listView = (ListView) findViewById(R.id.listView);
+    private List<Item> itemList;
     Context context = ItemSearch.this;
 
     private BaseAdapter adapter;
@@ -46,52 +45,34 @@ public class ItemSearch extends ListActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.item_search);
 
+        if(itemList == null) {
+            getItems();
+        }
+
         // Get the intent, verify the action and get the query
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
-            String value = extras.getString("json");
-            convertToJson(value);
+            String query = extras.getString("query");
+            searchItems(query);
         }
     }
 
-    private void convertToJson(String jsonString) {
-        GsonBuilder builder = new GsonBuilder();
-        Gson gson = builder.create();
-        Categories objects = gson.fromJson(jsonString, Categories.class);
+    private void searchItems(String query) {
+        query = query.toLowerCase();
+        List<Item> results = new ArrayList<Item>();
+        for(Item item: itemList) {
+            String name = item.name.toLowerCase();
+            if (name.contains(query)) {
+                results.add(item);
+            }
+        }
 
-        adapter = new ItemViewAdapter(context, objects.categories);
+        adapter = new ItemViewAdapter(context, results);
 
         setListAdapter(adapter);
     }
 
-    @Override
-    protected void onNewIntent(Intent intent) {
-        setIntent(intent);
-        handleIntent(intent);
-    }
-
-    private void handleIntent(Intent intent) {
-        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            String query = intent.getStringExtra(SearchManager.QUERY);
-            doMySearch(query);
-        }
-    }
-
-    @Override
-    public boolean onSearchRequested() {
-        // Get the intent, verify the action and get the query
-        Intent intent = getIntent();
-        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            String query = intent.getStringExtra(SearchManager.QUERY);
-            doMySearch(query);
-            return true;
-        }
-        return false;
-    }
-
-    private void doMySearch(String query) {
-
-
+    private void getItems() {
         Writer writer = new StringWriter();
         char[] buffer = new char[1024];
         try (InputStream is = getResources().openRawResource(R.raw.data)) {
@@ -105,15 +86,24 @@ public class ItemSearch extends ListActivity {
         }
 
         String jsonString = writer.toString();
+        Categories categories = convertToJson(jsonString);
+        setInitialItems(categories);
+    }
 
+    private void setInitialItems(Categories categories) {
+        itemList = new ArrayList<Item>();
+        for (Category category: categories.categories) {
+            itemList.addAll(category.items);
+        }
+    }
+
+    private Categories convertToJson(String jsonString) {
         GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();
-        Categories objects = gson.fromJson(jsonString, Categories.class);
-
-        adapter = new ItemViewAdapter(context, objects.categories);
-
-        setListAdapter(adapter);
+        Categories categories = gson.fromJson(jsonString, Categories.class);
+        return categories;
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -144,10 +134,6 @@ public class ItemSearch extends ListActivity {
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    public void getItems() {
-
     }
 
 }
