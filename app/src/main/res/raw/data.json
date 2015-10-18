@@ -1,0 +1,99 @@
+{
+  "categories": [
+    {
+      "name": "Dairy",
+      "id": "3f5c201f-fe17-4172-b111-a793ea3e0337",
+      "beaconId": "81658e72-9497-4c96-9c63-e8c13146a633",
+      "aisleNum": 4,
+      "items": [
+        {
+          "name": "Milk",
+          "id": "e7ac9e3e-5db3-4ee8-a373-e406c09db265",
+          "nutritionFacts": "High in Calcium",
+          "state": "Available",
+          "recipes": [
+
+          ]
+        },
+        {
+          "name": "Cheese",
+          "id": "93c36229-bfec-4a2c-babd-a335093c36b6",
+          "nutritionFacts": "High in Calcium and Fat",
+          "state": "Available",
+          "recipes": [
+
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Meat",
+      "id": "d4b38ced-47e2-47fd-8ed2-760406167791",
+      "beaconId": "2daac9b1-3c05-4b0d-89c3-5862ac8e6fef",
+      "aisleNum": 1,
+      "items": [
+        {
+          "name": "Bacon",
+          "id": "c498bc45-9cb2-4933-b569-62f0ec683d1f",
+          "nutritionFacts": "High in Fat and Sodium",
+          "state": "Available",
+          "recipes": [
+
+          ]
+        },
+        {
+          "name": "Sausage",
+          "id": "89c6897a-188b-46c8-8876-29bee823f548",
+          "nutritionFacts": "High in Fat and Sodium",
+          "state": "Available",
+          "recipes": [
+
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Produce",
+      "id": "9c37173c-bf4c-4749-882f-22d13f09e9b8",
+      "beaconId": "cc64deab-57fb-4107-9ac3-d986660c82de",
+      "aisleNum": 2,
+      "items": [
+        {
+          "name": "Carrot",
+          "id": "d9adf365-0544-4965-9a26-f8da10c6ccd2",
+          "nutritionFacts": "High in Vitamin A and Fiber",
+          "state": "Available",
+          "recipes": [
+
+          ]
+        },
+        {
+          "name": "Broccoli",
+          "id": "38ae93b1-7b63-4e3b-9d7c-c75bec85713e",
+          "nutritionFacts": "High in Vitamin A and Fiber",
+          "state": "Available",
+          "recipes": [
+
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Frozen",
+      "id": "5d4d29d3-43d6-409c-ac12-7dffef8ec5d8",
+      "beaconId": "6f1fad32-1310-4bd8-a9b4-d24ac28be1b7",
+      "aisleNum": 3,
+      "items": [
+        {
+          "name": "Ice Cream",
+          "id": "d96a8800-f70b-4a67-8687-1c57320cae04",
+          "nutritionFacts": "High in Calcium, Sugar, and Fat",
+          "state": "Available",
+          "recipes": [
+
+          ]
+        }
+      ]
+    }
+  ]
+}

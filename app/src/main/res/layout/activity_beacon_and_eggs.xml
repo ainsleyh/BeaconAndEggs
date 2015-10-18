@@ -22,4 +22,17 @@
         android:clickable="true"
         android:onClick="onClickDone" />
 
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/add"
+        android:id="@+id/addButton"
+        android:layout_alignParentTop="true"
+        android:layout_alignEnd="@+id/groceryListView"
+        android:textColor="#F5F5F5"
+        android:background="#6495ED"
+        android:clickable="true"
+        android:src="@android:drawable/ic_input_add"
+        android:onClick="goToAdd"  />
+
 </RelativeLayout>

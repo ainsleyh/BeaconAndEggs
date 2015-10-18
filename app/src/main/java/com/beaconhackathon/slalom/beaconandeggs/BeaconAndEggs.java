@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -54,12 +55,20 @@ public class BeaconAndEggs extends Activity {
         populateAvailableCategories();
 
         groceryCart = new GroceryCart();
+
+        //See if the new items are being added to the list
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            Item item = (Item) extras.get("item");
+            groceryCart.items.add(item);
+        }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_beacon_and_eggs, menu);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_beacon_and_eggs, menu);
         return true;
     }
 
@@ -170,6 +179,11 @@ public class BeaconAndEggs extends Activity {
         Intent intent = new Intent(BeaconAndEggs.this, MapLocator.class);
         intent.putExtra("groceryCart", this.groceryCart);
         intent.putExtra("store", this.selectedStore);
+        startActivity(intent);
+    }
+
+    public void goToAdd(View view) {
+        Intent intent = new Intent(BeaconAndEggs.this, ItemSearch.class);
         startActivity(intent);
     }
 }
