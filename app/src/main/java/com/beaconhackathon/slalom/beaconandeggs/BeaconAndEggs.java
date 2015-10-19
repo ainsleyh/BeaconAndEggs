@@ -8,6 +8,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import org.json.*;
@@ -15,6 +17,7 @@ import org.json.*;
 import com.beaconhackathon.slalom.beaconandeggs.Models.Category;
 import com.beaconhackathon.slalom.beaconandeggs.Models.GroceryCart;
 import com.beaconhackathon.slalom.beaconandeggs.Models.Item;
+import com.beaconhackathon.slalom.beaconandeggs.Models.Notifications;
 import com.beaconhackathon.slalom.beaconandeggs.Models.State;
 import com.beaconhackathon.slalom.beaconandeggs.Models.Store;
 
@@ -30,17 +33,26 @@ public class BeaconAndEggs extends Activity {
 
     private Store selectedStore;
 
+    private Notifications notifications;
+
     private UserItemListDatabaseHelper userItemListDB;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //Remove title bar
+        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+
+        //Remove notification bar
+        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_beacon_and_eggs);
 
         userItemListDB = new UserItemListDatabaseHelper(getApplicationContext());
 
         ListView groceryListView = (ListView) findViewById(R.id.groceryListView);
 
+        notifications = new Notifications();
         ArrayList<String> groceryListItems = fillItemList();
 
         ArrayAdapter<String> groceryListAdapter = new ArrayAdapter<>(
@@ -107,6 +119,10 @@ public class BeaconAndEggs extends Activity {
     private void populateAvailableCategories() {
 
         selectedStore = new Store();
+        selectedStore.name = "Safeway";
+        selectedStore.address = new ArrayList<>();
+        selectedStore.address.add("1234 Strawberry Lane");
+        selectedStore.address.add("Seattle, WA");
 
         try {
             String json = loadJSONFromAsset();
@@ -170,15 +186,11 @@ public class BeaconAndEggs extends Activity {
      */
     public void onClickDone(View view) {
 
-        /*UUID id = UUID.randomUUID();
-        UUID categoryId = UUID.fromString("01a43abb-62ea-42f3-9daf-4d25c7940f5b");
-        Item eggs = new Item("Eggs", id, categoryId);
-        this.groceryCart.items.add(eggs);*/
-
         // change view to MapLocator
         Intent intent = new Intent(BeaconAndEggs.this, MapLocator.class);
         intent.putExtra("groceryCart", this.groceryCart);
         intent.putExtra("store", this.selectedStore);
+        intent.putExtra("notifications", this.notifications);
         startActivity(intent);
     }
 

@@ -7,7 +7,8 @@
 
     <ListView android:layout_width="fill_parent"
               android:layout_height="fill_parent"
-              android:id="@+id/groceryListView">
+              android:id="@+id/groceryListView"
+        android:layout_below="@+id/textView">
     </ListView>
 
     <Button
@@ -34,5 +35,14 @@
         android:clickable="true"
         android:src="@android:drawable/ic_input_add"
         android:onClick="goToAdd"  />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="SAFEWAY \n1234 Strawberry Lane \nSeattle, WA"
+        android:id="@+id/textView"
+        android:layout_alignParentStart="true"
+        android:layout_alignEnd="@+id/doneButton" />
 
 </RelativeLayout>

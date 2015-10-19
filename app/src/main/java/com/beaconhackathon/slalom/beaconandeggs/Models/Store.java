@@ -21,6 +21,11 @@ public class Store implements Serializable {
     public String name;
 
     /**
+     * The address, split by line rows
+     */
+    public List<String> address;
+
+    /**
      * Available Categories for the store
      */
     public List<Category> availableCategories;
