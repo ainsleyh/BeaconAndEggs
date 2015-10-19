@@ -10,27 +10,23 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.beaconhackathon.slalom.beaconandeggs.Models.Category;
 import com.beaconhackathon.slalom.beaconandeggs.Models.GroceryCart;
-import com.beaconhackathon.slalom.beaconandeggs.Models.Item;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.UUID;
 
 public class BeaconAndEggs extends Activity {
 
     private GroceryCart groceryCart;
 
-    private UserItemListDatabaseHelper userItemListDB;
+    private ItemListDatabaseHelper userItemListDB;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_beacon_and_eggs);
 
-        userItemListDB = new UserItemListDatabaseHelper(getApplicationContext());
+        userItemListDB = new ItemListDatabaseHelper(getApplicationContext());
 
         ListView groceryListView = (ListView) findViewById(R.id.groceryListView);
 
@@ -67,6 +63,13 @@ public class BeaconAndEggs extends Activity {
             return true;
         }
 
+        //call recipe search activity
+        //this functionality may be refactored from the menu
+        if (id==R.id.action_showRecipeSearch){
+            onClickShowRecipeSearch(item);
+            return true;
+        }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -99,5 +102,16 @@ public class BeaconAndEggs extends Activity {
         Intent intent = new Intent(BeaconAndEggs.this, MapLocator.class);
         intent.putExtra("groceryCart", this.groceryCart);
         startActivity(intent);
+    }
+	
+	 /**
+     * Called when the Menu item for recipe search is clicked
+     *
+     * @param item recipe search menu item
+     */
+	public void onClickShowRecipeSearch(MenuItem item){
+        Intent intent = new Intent(BeaconAndEggs.this, RecipeSearch.class);
+        startActivity(intent);
+
     }
 }

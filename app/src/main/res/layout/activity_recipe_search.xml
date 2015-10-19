@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:tools="http://schemas.android.com/tools"
+android:orientation="vertical" android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:baselineAligned="false"
+android:weightSum="1"
+tools:context="com.beaconhackathon.slalom.beaconandeggs.RecipeSearchActivity">
+
+    <SearchView
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:id="@+id/recipeSearchView"
+        android:gravity="left"
+        android:layout_gravity="top"
+        android:layout_weight=".1" />
+
+    <ListView
+    android:layout_width="fill_parent"
+    android:layout_height="0dp"
+    android:id="@+id/ingredientListView"
+    android:layout_weight=".45"
+        android:layout_gravity="top" />
+
+    <ListView
+    android:layout_width="fill_parent"
+    android:layout_height="0dp"
+    android:id="@+id/recipeSearchListView"
+    android:layout_weight=".45" />
+
+
+
+</LinearLayout>
