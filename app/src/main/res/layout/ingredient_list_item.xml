@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:id="@+id/ingredientListRow"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:padding="10dp"
+    android:textSize="16sp" >
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Ingredient"
+        android:id="@+id/ingredient_list_row_text"
+        android:layout_gravity="left"
+        android:layout_weight=".95"
+        android:gravity="left" />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/remove_ingredient_row"
+        android:layout_weight=".05"
+        android:background="@android:drawable/ic_delete"
+        android:layout_gravity="right"
+        android:clickable="true"
+        android:onClick="onClickRemoveIngredient"/>
+</LinearLayout>

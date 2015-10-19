@@ -1,6 +1,7 @@
 package com.beaconhackathon.slalom.beaconandeggs;
 
 import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.RemoteException;
@@ -57,58 +58,67 @@ public class MapLocator extends Activity {
         region = new Region("monitored region",
                 "B9407F30-F5F8-466E-AFF9-25556B57FE6D", 45777, 8263);
 
+        final BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (bluetoothAdapter == null || !bluetoothAdapter.isEnabled()) {
+            // emulator is running so do not instantiate the beaconmanager
+            return;
+        }
+
         // set up ranging Beacon Manager
         rangingBeaconManager = new BeaconManager(this);
 
         rangingBeaconManager.setRangingListener(new BeaconManager.RangingListener() {
-            @Override
-            public void onBeaconsDiscovered(Region region, List<Beacon> list) {
+                @Override
+                public void onBeaconsDiscovered(Region region, List<Beacon> list) {
 
-                Beacon nearestBeacon = getClosestBeacon(list);
+                    Beacon nearestBeacon = getClosestBeacon(list);
 
-                if (nearestBeacon == null) {
-                    // notify user, and return
-                    return;
+                    if (nearestBeacon == null) {
+                        // notify user, and return
+                        return;
+                    }
+
+                    //we should take an average proximity across the last N calls for
+                    //better accuracy
+
+                    // immediate, near, far
+                    Utils.Proximity proximity = Utils.computeProximity(nearestBeacon);
+                    // distance in meters
+                    double distance = Utils.computeAccuracy(nearestBeacon);
+
+                    //In general, the greater the distance between the device and the beacon,
+                    // the lesser the strength of the received signal.
+
+                    // now we have the closest beacon, highlight on map
+                    // mark as visited and repeat
                 }
-
-                //we should take an average proximity across the last N calls for
-                //better accuracy
-
-                // immediate, near, far
-                Utils.Proximity proximity = Utils.computeProximity(nearestBeacon);
-                // distance in meters
-                double distance = Utils.computeAccuracy(nearestBeacon);
-
-                //In general, the greater the distance between the device and the beacon,
-                // the lesser the strength of the received signal.
-
-                // now we have the closest beacon, highlight on map
-                // mark as visited and repeat
-            }
         });
-
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        rangingBeaconManager.connect(new BeaconManager.ServiceReadyCallback() {
-            @Override
-            public void onServiceReady() {
-                try {
-                    rangingBeaconManager.startRanging(region);
-                } catch (RemoteException e) {
-                    e.printStackTrace();
+        try {
+            rangingBeaconManager.connect(new BeaconManager.ServiceReadyCallback() {
+                @Override
+                public void onServiceReady() {
+                    try {
+                        rangingBeaconManager.startRanging(region);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
                 }
-            }
-        });
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     protected void onPause() {
         try {
             rangingBeaconManager.stopRanging(region);
-        } catch (RemoteException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         super.onPause();
