@@ -28,16 +28,20 @@ public class BeaconAndEggs extends Activity {
 
     private GroceryCart groceryCart;
 
+
+    private ItemListDatabaseHelper userItemListDB;
+
     private Store selectedStore;
 
     private UserItemListDatabaseHelper userItemListDB;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_beacon_and_eggs);
 
-        userItemListDB = new UserItemListDatabaseHelper(getApplicationContext());
+        userItemListDB = new ItemListDatabaseHelper(getApplicationContext());
 
         ListView groceryListView = (ListView) findViewById(R.id.groceryListView);
 
@@ -81,6 +85,13 @@ public class BeaconAndEggs extends Activity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            return true;
+        }
+
+        //call recipe search activity
+        //this functionality may be refactored from the menu
+        if (id==R.id.action_showRecipeSearch){
+            onClickShowRecipeSearch(item);
             return true;
         }
 
@@ -185,5 +196,16 @@ public class BeaconAndEggs extends Activity {
     public void goToAdd(View view) {
         Intent intent = new Intent(BeaconAndEggs.this, ItemSearch.class);
         startActivity(intent);
+    }
+	
+	 /**
+     * Called when the Menu item for recipe search is clicked
+     *
+     * @param item recipe search menu item
+     */
+	public void onClickShowRecipeSearch(MenuItem item){
+        Intent intent = new Intent(BeaconAndEggs.this, RecipeSearch.class);
+        startActivity(intent);
+
     }
 }
