@@ -118,7 +118,7 @@ public class BeaconAndEggs extends Activity {
                 Category cat = new Category();
                 cat.name = arr.getJSONObject(i).getString("name");
                 cat.id = UUID.fromString(arr.getJSONObject(i).getString("id"));
-                cat.beaconId = UUID.fromString(arr.getJSONObject(i).getString("beaconId"));
+                cat.beaconId = arr.getJSONObject(i).getInt("beaconId");
                 cat.aisleNum = arr.getJSONObject(i).getInt("aisleNum");
 
                 JSONArray items = arr.getJSONObject(i).getJSONArray("items");

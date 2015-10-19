@@ -29,9 +29,9 @@ public class Category implements Serializable {
     public UUID id;
 
     /**
-     * The id of the corresponding beacon
+     * The minor of the corresponding beacon
      */
-    public UUID beaconId;
+    public int beaconId;
 
     /**
      * The aisle number of the Category items
@@ -42,6 +42,25 @@ public class Category implements Serializable {
      * The list of grocery store items for the category
      */
     public List<Item> items;
+
+    /**
+     * Returns whether the items in the category are Checked
+     * off the list (not Available)
+     *
+     * True=items are checked
+     * False=items not checked
+     */
+    public boolean ItemsChecked() {
+        if (items == null)
+            return true;
+
+        for (Item item : items) {
+            if (item.state == State.Available)
+                return false;
+        }
+
+        return true;
+    }
 
     /**
      * Marks all of the items for the category as "Checked"

@@ -3,7 +3,7 @@
     {
       "name": "Dairy",
       "id": "3f5c201f-fe17-4172-b111-a793ea3e0337",
-      "beaconId": "81658e72-9497-4c96-9c63-e8c13146a633",
+      "beaconId": "816",
       "aisleNum": 4,
       "items": [
         {
@@ -29,7 +29,7 @@
     {
       "name": "Meat",
       "id": "d4b38ced-47e2-47fd-8ed2-760406167791",
-      "beaconId": "2daac9b1-3c05-4b0d-89c3-5862ac8e6fef",
+      "beaconId": "2",
       "aisleNum": 1,
       "items": [
         {
@@ -55,7 +55,7 @@
     {
       "name": "Produce",
       "id": "9c37173c-bf4c-4749-882f-22d13f09e9b8",
-      "beaconId": "cc64deab-57fb-4107-9ac3-d986660c82de",
+      "beaconId": "5600",
       "aisleNum": 2,
       "items": [
         {
@@ -81,7 +81,7 @@
     {
       "name": "Frozen",
       "id": "5d4d29d3-43d6-409c-ac12-7dffef8ec5d8",
-      "beaconId": "6f1fad32-1310-4bd8-a9b4-d24ac28be1b7",
+      "beaconId": "6",
       "aisleNum": 3,
       "items": [
         {
