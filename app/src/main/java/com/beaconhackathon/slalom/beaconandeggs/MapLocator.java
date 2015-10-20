@@ -108,7 +108,7 @@ public class MapLocator extends Activity {
 
         ImageView image = (ImageView) findViewById(R.id.imageView);
         image.setBackground(getApplicationContext().getResources()
-                .getDrawable(R.drawable.sample_floor_plan));
+                .getDrawable(R.drawable.floorplan));
     }
 
     /*private void setUpUI() {
