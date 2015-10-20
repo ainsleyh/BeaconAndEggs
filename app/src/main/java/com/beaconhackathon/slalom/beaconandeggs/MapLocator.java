@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.RemoteException;
 import android.view.Window;
 import android.view.WindowManager;
@@ -20,6 +21,10 @@ import com.estimote.sdk.Beacon;
 import com.estimote.sdk.BeaconManager;
 import com.estimote.sdk.Region;
 import com.estimote.sdk.Utils;
+import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.mapboxsdk.overlay.ItemizedIconOverlay;
+import com.mapbox.mapboxsdk.overlay.Marker;
+import com.mapbox.mapboxsdk.views.MapView;
 
 /**
  * Created by ainsleyherndon on 10/9/15.
@@ -34,6 +39,11 @@ public class MapLocator extends Activity {
     private Store store;
 
     private List<Category> selectedCategories;
+
+    private MapView mv;
+    private Handler myHandler;
+    private ItemizedIconOverlay itemizedIconOverlayGT;
+    private Marker marker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,19 +65,18 @@ public class MapLocator extends Activity {
         // locate the categories of the items in the list
         selectedCategories = determineCategories();
 
+        setUpUI();
+
         region = new Region("monitored region",
                 "B9407F30-F5F8-466E-AFF9-25556B57FE6D", 45777, 8263);
 
         final BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        if (bluetoothAdapter == null || !bluetoothAdapter.isEnabled()) {
-            // emulator is running so do not instantiate the beaconmanager
-            return;
-        }
+        if (bluetoothAdapter != null && bluetoothAdapter.isEnabled()) {
+            // emulator is not running so we instantiate the beaconmanager
+            // set up ranging Beacon Manager
+            rangingBeaconManager = new BeaconManager(this);
 
-        // set up ranging Beacon Manager
-        rangingBeaconManager = new BeaconManager(this);
-
-        rangingBeaconManager.setRangingListener(new BeaconManager.RangingListener() {
+            rangingBeaconManager.setRangingListener(new BeaconManager.RangingListener() {
                 @Override
                 public void onBeaconsDiscovered(Region region, List<Beacon> list) {
 
@@ -92,7 +101,65 @@ public class MapLocator extends Activity {
                     // now we have the closest beacon, highlight on map
                     // mark as visited and repeat
                 }
-        });
+            });
+        }
+    }
+
+    private void setUpUI() {
+        myHandler = new Handler();
+        mv = (MapView) findViewById(R.id.mapview);
+        mv.setMinZoomLevel(mv.getTileProvider().getMinimumZoomLevel());
+        mv.setMaxZoomLevel(mv.getTileProvider().getMaximumZoomLevel());
+        mv.setCenter(new LatLng(47.616035, -122.309646));
+        mv.setZoom(12);
+
+        mv.setUserLocationEnabled(true);
+
+        ArrayList<Marker> Markers = new ArrayList<Marker>();
+        marker = new Marker(mv, "Trader Joes", "description", new LatLng(47.616035, -122.309646));
+        marker.setMarker(getApplicationContext().getResources()
+                .getDrawable(R.drawable.sample_floor_plan));
+        Markers.add(marker);
+        itemizedIconOverlayGT = new ItemizedIconOverlay(this, Markers,
+                new ItemizedIconOverlay.OnItemGestureListener<Marker>() {
+
+                    @Override
+                    public boolean onItemSingleTapUp(int index, Marker item) {
+
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onItemLongPress(int index, Marker item) {
+                        return false;
+                    }
+                });
+
+
+        myHandler = new Handler();
+        myHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mv.setZoom(15);
+            }
+        }, 3000);
+
+        myHandler.postDelayed(new Runnable() {
+            @Override
+            public void run(){
+                mv.setZoom(18);
+            }
+        }, 6000);
+
+        myHandler.postDelayed(new Runnable() {
+            @Override
+            public void run(){
+
+                // marker
+                mv.addMarker(marker);
+                mv.addItemizedOverlay(itemizedIconOverlayGT);
+            }
+        }, 8000);
     }
 
     @Override
