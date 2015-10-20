@@ -6,8 +6,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.RemoteException;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageView;
 
 import com.beaconhackathon.slalom.beaconandeggs.Models.Category;
 import com.beaconhackathon.slalom.beaconandeggs.Models.GroceryCart;
@@ -21,7 +23,6 @@ import com.estimote.sdk.Beacon;
 import com.estimote.sdk.BeaconManager;
 import com.estimote.sdk.Region;
 import com.estimote.sdk.Utils;
-import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.overlay.ItemizedIconOverlay;
 import com.mapbox.mapboxsdk.overlay.Marker;
 import com.mapbox.mapboxsdk.views.MapView;
@@ -65,8 +66,6 @@ public class MapLocator extends Activity {
         // locate the categories of the items in the list
         selectedCategories = determineCategories();
 
-        setUpUI();
-
         region = new Region("monitored region",
                 "B9407F30-F5F8-466E-AFF9-25556B57FE6D", 45777, 8263);
 
@@ -103,9 +102,16 @@ public class MapLocator extends Activity {
                 }
             });
         }
+
+        mv = (MapView) findViewById(R.id.mapview);
+        ((ViewGroup) mv.getParent()).removeView(mv);
+
+        ImageView image = (ImageView) findViewById(R.id.imageView);
+        image.setBackground(getApplicationContext().getResources()
+                .getDrawable(R.drawable.sample_floor_plan));
     }
 
-    private void setUpUI() {
+    /*private void setUpUI() {
         myHandler = new Handler();
         mv = (MapView) findViewById(R.id.mapview);
         mv.setMinZoomLevel(mv.getTileProvider().getMinimumZoomLevel());
@@ -117,50 +123,60 @@ public class MapLocator extends Activity {
 
         ArrayList<Marker> Markers = new ArrayList<Marker>();
         marker = new Marker(mv, "Trader Joes", "description", new LatLng(47.616035, -122.309646));
-        marker.setMarker(getApplicationContext().getResources()
-                .getDrawable(R.drawable.sample_floor_plan));
+        //marker.setMarker(getApplicationContext().getResources()
+         //       .getDrawable(R.drawable.sample_floor_plan));
         Markers.add(marker);
         itemizedIconOverlayGT = new ItemizedIconOverlay(this, Markers,
                 new ItemizedIconOverlay.OnItemGestureListener<Marker>() {
 
                     @Override
                     public boolean onItemSingleTapUp(int index, Marker item) {
+                        marker = new Marker(mv, "Trader Joes", "description", new LatLng(47.616035, -122.309646));
 
-                        return false;
+                        ((ViewGroup) mv.getParent()).removeView(mv);
+
+                        ImageView image = (ImageView) findViewById(R.id.imageView);
+                        image.setBackground(getApplicationContext().getResources()
+                                .getDrawable(R.drawable.sample_floor_plan));
+                        return true;
                     }
 
                     @Override
                     public boolean onItemLongPress(int index, Marker item) {
+
                         return false;
                     }
                 });
-
+        // marker
+        mv.addMarker(marker);
+        mv.addItemizedOverlay(itemizedIconOverlayGT);
 
         myHandler = new Handler();
         myHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 mv.setZoom(15);
+
+                myHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mv.setZoom(18);
+                    }
+                }, 3000);
+
+                myHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        // marker
+                        //mv.addMarker(marker);
+                        //mv.addItemizedOverlay(itemizedIconOverlayGT);
+                    }
+                }, 2000);
             }
         }, 3000);
 
-        myHandler.postDelayed(new Runnable() {
-            @Override
-            public void run(){
-                mv.setZoom(18);
-            }
-        }, 6000);
-
-        myHandler.postDelayed(new Runnable() {
-            @Override
-            public void run(){
-
-                // marker
-                mv.addMarker(marker);
-                mv.addItemizedOverlay(itemizedIconOverlayGT);
-            }
-        }, 8000);
-    }
+    }*/
 
     @Override
     protected void onResume() {
