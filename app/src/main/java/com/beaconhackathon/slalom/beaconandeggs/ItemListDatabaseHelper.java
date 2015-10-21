@@ -6,6 +6,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.Cursor;
 
+import java.io.File;
+
 /**
  * Created by httpnick on 10/8/15.
  * DB helper to be used within the application
@@ -21,6 +23,8 @@ public class ItemListDatabaseHelper extends SQLiteOpenHelper {
         super(context, dbName, null, 1);
         ITEM_NAME_COLUMN = itemNameColumn;
         DB_NAME = dbName;
+
+        onCreate(this.getWritableDatabase());
     }
 
 
@@ -30,26 +34,17 @@ public class ItemListDatabaseHelper extends SQLiteOpenHelper {
      */
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
+
+        //if (sqLiteDatabase.con != null)
+        //    return;
+
         sqLiteDatabase.execSQL(
-                "create table" +
+                "create table if not exists" +
                         " " + DB_NAME + "(" +
                         ITEM_NAME_COLUMN +
                         " varchar(100) " +
                         "primary key)"
         );
-
-        //for debug purposes only.
-        if(DB_NAME.equals("UserItemList")) {
-            String[] itemsToAdd = new String[]{"Milk",
-                    "Eggs", "Chicken",
-                    "Fuji Apples", "Rice",
-                    "Cheese", "Yogurt"
-            };
-
-            for (String item : itemsToAdd) {
-                insertItem(sqLiteDatabase, item);
-            }
-        }
     }
 
     @Override
