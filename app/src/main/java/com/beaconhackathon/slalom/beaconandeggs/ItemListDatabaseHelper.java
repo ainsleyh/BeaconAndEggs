@@ -13,21 +13,14 @@ import android.database.Cursor;
  */
 public class ItemListDatabaseHelper extends SQLiteOpenHelper {
 
-    private static String DB_NAME;
-    private static String ITEM_NAME_COLUMN;
-
-    public ItemListDatabaseHelper(Context context) {
-        // magic numbers woo          V (sorry)
-        super(context, DB_NAME, null, 1);
-        DB_NAME = "UserItemList";
-        ITEM_NAME_COLUMN = "ItemName";
-    }
+    private String DB_NAME;
+    private String ITEM_NAME_COLUMN;
 
     public ItemListDatabaseHelper(Context context, String dbName, String itemNameColumn) {
         // arbitrary versioning!      V
-        super(context, DB_NAME, null, 1);
-        this.DB_NAME = dbName;
-        this.ITEM_NAME_COLUMN = itemNameColumn;
+        super(context, dbName, null, 1);
+        ITEM_NAME_COLUMN = itemNameColumn;
+        DB_NAME = dbName;
     }
 
 
