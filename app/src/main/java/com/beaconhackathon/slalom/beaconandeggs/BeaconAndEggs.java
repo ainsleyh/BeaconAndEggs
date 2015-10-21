@@ -1,23 +1,32 @@
 package com.beaconhackathon.slalom.beaconandeggs;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+
+import android.widget.AbsListView;
+import android.widget.AdapterView;
+import android.widget.ListView;
+import android.widget.Toast;
 import org.json.*;
 
 import com.beaconhackathon.slalom.beaconandeggs.Models.Category;
 import com.beaconhackathon.slalom.beaconandeggs.Models.GroceryCart;
 import com.beaconhackathon.slalom.beaconandeggs.Models.Item;
+import com.beaconhackathon.slalom.beaconandeggs.Models.Notifications;
 import com.beaconhackathon.slalom.beaconandeggs.Models.State;
 import com.beaconhackathon.slalom.beaconandeggs.Models.Store;
 
@@ -27,37 +36,89 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.UUID;
 
+import com.daimajia.swipe.SwipeLayout;
+import com.daimajia.swipe.util.Attributes;
+
 public class BeaconAndEggs extends Activity {
 
     private GroceryCart groceryCart;
 
+    private ItemListDatabaseHelper userItemListDB;
+
     private Store selectedStore;
 
-    private ItemListDatabaseHelper userItemListDB;
+    private Notifications notifications;
+
+    private ListViewAdapter mListViewAdapter;
+
+    private Context mContext = this;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_beacon_and_eggs);
 
-        userItemListDB = new ItemListDatabaseHelper(getApplicationContext());
+        userItemListDB = new ItemListDatabaseHelper(getApplicationContext(), "UserItemList", "ItemName");
 
-        ListView groceryListView = (ListView) findViewById(R.id.groceryListView);
+        groceryCart= new GroceryCart(fillItemList());
 
-        ArrayList<String> groceryListItems = fillItemList();
+        final ListView groceryListView = (ListView) findViewById(R.id.groceryListView);
+        notifications = new Notifications();
 
-        ArrayAdapter<String> groceryListAdapter = new ArrayAdapter<>(
-                this,
-                R.layout.grocery_list_item,
-                groceryListItems
-        );
+        mListViewAdapter = new ListViewAdapter(this, groceryCart);
 
-        groceryListView.setAdapter(groceryListAdapter);
+        groceryListView.setAdapter(mListViewAdapter);
+
+        mListViewAdapter.setMode(Attributes.Mode.Single);
+
+        groceryListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                ((SwipeLayout) (groceryListView.getChildAt(
+                        position - groceryListView.getFirstVisiblePosition()))).open(true);
+            }
+        });
+        groceryListView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                Log.e("ListView", "OnTouch");
+                return false;
+            }
+        });
+        groceryListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                Toast.makeText(mContext, "OnItemLongClickListener", Toast.LENGTH_SHORT).show();
+                return true;
+            }
+        });
+        groceryListView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+                Log.e("ListView", "onScrollStateChanged");
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+
+            }
+        });
+
+        groceryListView.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Log.e("ListView", "onItemSelected:" + position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                Log.e("ListView", "onNothingSelected:");
+            }
+        });
 
         // populate available items in the store, and categories
         populateAvailableCategories();
-
-        groceryCart = new GroceryCart();
 
         //See if the new items are being added to the list
         Bundle extras = getIntent().getExtras();
@@ -110,14 +171,14 @@ public class BeaconAndEggs extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    private ArrayList<String> fillItemList() {
-        LinkedList<String> items = new LinkedList<>();
+    private ArrayList<Item> fillItemList() {
+        LinkedList<Item> items = new LinkedList<>();
         Cursor itemsCursor = userItemListDB.getAllItems(
                 userItemListDB.getReadableDatabase()
         );
         itemsCursor.moveToFirst();
         while (!itemsCursor.isAfterLast()) {
-            items.add(itemsCursor.getString(0));
+            items.add(new Item(itemsCursor.getString(0), null, null));
             itemsCursor.moveToNext();
         }
         return new ArrayList<>(items);
@@ -130,6 +191,10 @@ public class BeaconAndEggs extends Activity {
     private void populateAvailableCategories() {
 
         selectedStore = new Store();
+        selectedStore.name = "Safeway";
+        selectedStore.address = new ArrayList<>();
+        selectedStore.address.add("1234 Strawberry Lane");
+        selectedStore.address.add("Seattle, WA");
 
         try {
             String json = loadJSONFromAsset();
@@ -141,7 +206,7 @@ public class BeaconAndEggs extends Activity {
                 Category cat = new Category();
                 cat.name = arr.getJSONObject(i).getString("name");
                 cat.id = UUID.fromString(arr.getJSONObject(i).getString("id"));
-                cat.beaconId = UUID.fromString(arr.getJSONObject(i).getString("beaconId"));
+                cat.beaconId = arr.getJSONObject(i).getInt("beaconId");
                 cat.aisleNum = arr.getJSONObject(i).getInt("aisleNum");
 
                 JSONArray items = arr.getJSONObject(i).getJSONArray("items");
@@ -193,15 +258,11 @@ public class BeaconAndEggs extends Activity {
      */
     public void onClickDone(View view) {
 
-        /*UUID id = UUID.randomUUID();
-        UUID categoryId = UUID.fromString("01a43abb-62ea-42f3-9daf-4d25c7940f5b");
-        Item eggs = new Item("Eggs", id, categoryId);
-        this.groceryCart.items.add(eggs);*/
-
         // change view to MapLocator
         Intent intent = new Intent(BeaconAndEggs.this, MapLocator.class);
         intent.putExtra("groceryCart", this.groceryCart);
         intent.putExtra("store", this.selectedStore);
+        intent.putExtra("notifications", this.notifications);
         startActivity(intent);
     }
 
@@ -209,13 +270,13 @@ public class BeaconAndEggs extends Activity {
         Intent intent = new Intent(BeaconAndEggs.this, ItemSearch.class);
         startActivity(intent);
     }
-	
-	 /**
+
+     /**
      * Called when the Menu item for recipe search is clicked
      *
      * @param item recipe search menu item
      */
-	public void onClickShowRecipeSearch(MenuItem item){
+    public void onClickShowRecipeSearch(MenuItem item){
         Intent intent = new Intent(BeaconAndEggs.this, RecipeSearch.class);
         startActivity(intent);
 
