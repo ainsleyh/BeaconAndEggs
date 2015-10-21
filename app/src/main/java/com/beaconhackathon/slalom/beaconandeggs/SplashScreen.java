@@ -32,7 +32,7 @@ public class SplashScreen extends Activity {
                 }catch(InterruptedException e){
                     e.printStackTrace();
                 }finally{
-                    Intent intent = new Intent(SplashScreen.this,BeaconAndEggs.class);
+                    Intent intent = new Intent(SplashScreen.this, StoreSelection.class);
                     startActivity(intent);
                 }
             }

@@ -7,32 +7,39 @@
 
     <ListView android:layout_width="fill_parent"
               android:layout_height="fill_parent"
-              android:id="@+id/groceryListView">
+              android:id="@+id/groceryListView"
+        android:layout_below="@+id/textView"
+        android:layout_above="@+id/doneButton">
     </ListView>
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Done"
-        android:id="@+id/doneButton"
-        android:layout_alignParentBottom="true"
-        android:layout_alignEnd="@+id/groceryListView"
-        android:textColor="#F5F5F5"
-        android:background="#6495ED"
-        android:clickable="true"
-        android:onClick="onClickDone" />
 
     <ImageButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/add"
-        android:id="@+id/addButton"
-        android:layout_alignParentTop="true"
-        android:layout_alignEnd="@+id/groceryListView"
-        android:textColor="#F5F5F5"
-        android:background="#6495ED"
+        android:text=" "
+        android:id="@+id/doneButton"
+        android:background="@drawable/map_button"
         android:clickable="true"
-        android:src="@android:drawable/ic_input_add"
-        android:onClick="goToAdd"  />
+        android:onClick="onClickDone"
+        android:layout_alignParentBottom="true"
+        android:layout_toStartOf="@+id/addButton" />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/addButton"
+        android:background="@drawable/add_item_button"
+        android:clickable="true"
+        android:onClick="goToAdd"
+        android:layout_alignParentBottom="true"
+        android:layout_alignEnd="@+id/groceryListView" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="SAFEWAY \n1234 Strawberry Lane \nSeattle, WA"
+        android:id="@+id/textView"
+        android:layout_alignParentStart="true"
+        android:layout_alignEnd="@+id/groceryListView" />
 
 </RelativeLayout>
