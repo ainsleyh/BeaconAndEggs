@@ -1,0 +1,14 @@
+{
+  "notifications": [
+    {
+      "title": "Sample",
+      "message": "Samples available for <Item>!",
+      "type": "Sample"
+    },
+    {
+      "title": "Coupon",
+      "message": "Coupon on <Item>!",
+      "type": "Coupon"
+    }
+  ]
+}

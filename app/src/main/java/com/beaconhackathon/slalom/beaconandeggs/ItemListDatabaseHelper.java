@@ -11,15 +11,25 @@ import android.database.Cursor;
  * DB helper to be used within the application
  * to store the user's persistent grocery list.
  */
-public class UserItemListDatabaseHelper extends SQLiteOpenHelper {
+public class ItemListDatabaseHelper extends SQLiteOpenHelper {
 
-    private static String DB_NAME = "userItemList";
-    private static String ITEM_NAME_COLUMN = "itemName";
+    private static String DB_NAME;
+    private static String ITEM_NAME_COLUMN;
 
-    public UserItemListDatabaseHelper(Context context) {
+    public ItemListDatabaseHelper(Context context) {
         // magic numbers woo          V (sorry)
         super(context, DB_NAME, null, 1);
+        DB_NAME = "UserItemList";
+        ITEM_NAME_COLUMN = "ItemName";
     }
+
+    public ItemListDatabaseHelper(Context context, String dbName, String itemNameColumn) {
+        // arbitrary versioning!      V
+        super(context, DB_NAME, null, 1);
+        this.DB_NAME = dbName;
+        this.ITEM_NAME_COLUMN = itemNameColumn;
+    }
+
 
     /**
      * Init the Database and fill with some make-shift data.
@@ -35,13 +45,17 @@ public class UserItemListDatabaseHelper extends SQLiteOpenHelper {
                         "primary key)"
         );
 
-        String[] itemsToAdd = new String[]{"Milk",
-                "Eggs", "Chicken",
-                "Fuji Apples", "Rice",
-                "Cheese", "Yogurt"
-        };
-        for(String item : itemsToAdd) {
-            insertItem(sqLiteDatabase, item);
+        //for debug purposes only.
+        if(DB_NAME.equals("UserItemList")) {
+            String[] itemsToAdd = new String[]{"Milk",
+                    "Eggs", "Chicken",
+                    "Fuji Apples", "Rice",
+                    "Cheese", "Yogurt"
+            };
+
+            for (String item : itemsToAdd) {
+                insertItem(sqLiteDatabase, item);
+            }
         }
     }
 
@@ -97,7 +111,7 @@ public class UserItemListDatabaseHelper extends SQLiteOpenHelper {
 
         return db.delete(
                 DB_NAME,
-                ITEM_NAME_COLUMN + "=" + itemName,
+                ITEM_NAME_COLUMN + "= '" + itemName +"'",
                 null
         );
     }

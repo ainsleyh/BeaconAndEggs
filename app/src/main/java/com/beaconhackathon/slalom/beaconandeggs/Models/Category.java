@@ -1,5 +1,6 @@
 package com.beaconhackathon.slalom.beaconandeggs.Models;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -11,7 +12,7 @@ import java.util.UUID;
  *
  * Created by ainsleyherndon on 10/5/15.
  */
-public class Category {
+public class Category implements Serializable {
 
     public Category() {
         items = new ArrayList<Item>();
@@ -28,9 +29,9 @@ public class Category {
     public UUID id;
 
     /**
-     * The id of the corresponding beacon
+     * The minor of the corresponding beacon
      */
-    public UUID beaconId;
+    public int beaconId;
 
     /**
      * The aisle number of the Category items
@@ -41,6 +42,25 @@ public class Category {
      * The list of grocery store items for the category
      */
     public List<Item> items;
+
+    /**
+     * Returns whether the items in the category are Checked
+     * off the list (not Available)
+     *
+     * True=items are checked
+     * False=items not checked
+     */
+    public boolean ItemsChecked() {
+        if (items == null)
+            return true;
+
+        for (Item item : items) {
+            if (item.state == State.Available)
+                return false;
+        }
+
+        return true;
+    }
 
     /**
      * Marks all of the items for the category as "Checked"

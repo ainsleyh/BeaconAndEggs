@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="1">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="400dp"
+        android:id="@+id/imageView"
+        android:background="@drawable/floorplan_2_beacons"
+        android:scaleType="fitXY"
+        android:layout_gravity="center_vertical"
+        />
+
+    <TextView
+        android:layout_width="331dp"
+        android:layout_height="wrap_content"
+        android:text="The most efficient route has been calculated"
+        android:id="@+id/textView2"
+        android:layout_gravity="center_horizontal"
+        android:layout_weight="0.74" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="144dp"
+        android:layout_height="wrap_content"
+        android:text="Begin Route"
+        android:id="@+id/button"
+        android:layout_gravity="center_horizontal"
+        android:background="#6495ED"
+        android:textColor="#ffffff"
+        android:clickable="true"
+        android:onClick="onClickBegin" />
+
+</LinearLayout>

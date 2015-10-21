@@ -37,6 +37,13 @@ public class Item implements Serializable {
      */
     public UUID categoryID;
 
+    /*
+     * Quantity of the item in cart
+     * todo not sure if this should be here
+     * todo but it's useful for adding an item
+     */
+    public int quantity;
+
     /**
      * The Item's nutrition facts
      * //  TODO Do we want this to be a string?

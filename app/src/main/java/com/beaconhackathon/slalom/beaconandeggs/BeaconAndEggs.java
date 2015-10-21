@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -15,14 +16,21 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
+import org.json.*;
 
 import com.beaconhackathon.slalom.beaconandeggs.Models.Category;
 import com.beaconhackathon.slalom.beaconandeggs.Models.GroceryCart;
 import com.beaconhackathon.slalom.beaconandeggs.Models.Item;
+import com.beaconhackathon.slalom.beaconandeggs.Models.Notifications;
+import com.beaconhackathon.slalom.beaconandeggs.Models.State;
+import com.beaconhackathon.slalom.beaconandeggs.Models.Store;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 
 import com.daimajia.swipe.SwipeLayout;
 import com.daimajia.swipe.util.Attributes;
@@ -31,9 +39,12 @@ public class BeaconAndEggs extends Activity {
 
     private GroceryCart groceryCart;
 
-    private List<Category> availableCategories;
+    private ItemListDatabaseHelper userItemListDB;
 
-    private UserItemListDatabaseHelper userItemListDB;
+    private Store selectedStore;
+
+    private Notifications notifications;
+
 
     private ListViewAdapter mListViewAdapter;
 
@@ -44,11 +55,12 @@ public class BeaconAndEggs extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_beacon_and_eggs);
 
-        userItemListDB = new UserItemListDatabaseHelper(getApplicationContext());
+        userItemListDB = new ItemListDatabaseHelper(getApplicationContext());
 
         groceryCart= new GroceryCart(fillItemList());
 
         final ListView groceryListView = (ListView) findViewById(R.id.groceryListView);
+        notifications = new Notifications();
 
         mListViewAdapter = new ListViewAdapter(this, groceryCart);
 
@@ -101,15 +113,22 @@ public class BeaconAndEggs extends Activity {
             }
         });
 
-        // TODO populate categories with json data & remove this
-        availableCategories = new ArrayList<>();
+        // populate available items in the store, and categories
+        populateAvailableCategories();
 
+        //See if the new items are being added to the list
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            Item item = (Item) extras.get("item");
+            groceryCart.items.add(item);
+        }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_beacon_and_eggs, menu);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_beacon_and_eggs, menu);
         return true;
     }
 
@@ -122,6 +141,13 @@ public class BeaconAndEggs extends Activity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            return true;
+        }
+
+        //call recipe search activity
+        //this functionality may be refactored from the menu
+        if (id==R.id.action_showRecipeSearch){
+            onClickShowRecipeSearch(item);
             return true;
         }
 
@@ -142,72 +168,100 @@ public class BeaconAndEggs extends Activity {
     }
 
     /**
+     * Populates the list of available Categories and Items from the
+     * json in an Assets file
+     */
+    private void populateAvailableCategories() {
+
+        selectedStore = new Store();
+        selectedStore.name = "Safeway";
+        selectedStore.address = new ArrayList<>();
+        selectedStore.address.add("1234 Strawberry Lane");
+        selectedStore.address.add("Seattle, WA");
+
+        try {
+            String json = loadJSONFromAsset();
+            JSONObject obj = new JSONObject(json);
+
+            JSONArray arr = obj.getJSONArray("categories");
+            for (int i = 0; i < arr.length(); i++)
+            {
+                Category cat = new Category();
+                cat.name = arr.getJSONObject(i).getString("name");
+                cat.id = UUID.fromString(arr.getJSONObject(i).getString("id"));
+                cat.beaconId = arr.getJSONObject(i).getInt("beaconId");
+                cat.aisleNum = arr.getJSONObject(i).getInt("aisleNum");
+
+                JSONArray items = arr.getJSONObject(i).getJSONArray("items");
+                for (int x = 0; x < items.length(); x++)
+                {
+                    Item item = new Item();
+                    item.name = items.getJSONObject(x).getString("name");
+                    item.id = UUID.fromString(items.getJSONObject(x).getString("id"));
+                    item.nutritionFacts = items.getJSONObject(x).getString("nutritionFacts");
+                    item.state = State.Available;
+
+                    cat.items.add(item);
+                }
+
+                selectedStore.availableCategories.add(cat);
+            }
+
+        } catch (Exception ex) {
+
+        }
+
+    }
+
+    /**
+     * Loads the Json from the Category json file
+     *
+     * @return the json from the file
+     */
+    public String loadJSONFromAsset() {
+        String json = null;
+        try {
+            InputStream is = this.getAssets().open("data.json");
+            int size = is.available();
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+            json = new String(buffer, "UTF-8");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+        return json;
+    }
+
+    /**
      * Called when the Done button is Click
      *
      * @param view the Button
      */
     public void onClickDone(View view) {
-        /*UUID id = UUID.randomUUID();
-        UUID categoryId = UUID.fromString("01a43abb-62ea-42f3-9daf-4d25c7940f5b");
-        Item eggs = new Item("Eggs", id, categoryId);
-        this.groceryCart.items.add(eggs);*/
 
         // change view to MapLocator
         Intent intent = new Intent(BeaconAndEggs.this, MapLocator.class);
         intent.putExtra("groceryCart", this.groceryCart);
+        intent.putExtra("store", this.selectedStore);
+        intent.putExtra("notifications", this.notifications);
         startActivity(intent);
     }
 
-    /**
-     * Returns the categories of the items in the listview
-     *
-     * @return A list of categories
-     */
-    private List<Category> determineCategories() {
-
-        List<Category> selectedCategories = new ArrayList<Category>();
-
-        for (Item item : groceryCart.items) {
-            Category itemCategory = null;
-            for (Category category : availableCategories) {
-                if (category.id == item.categoryID) {
-                    itemCategory = category;
-                    break;
-                }
-            }
-
-            if (!selectedCategories.contains(itemCategory))
-                selectedCategories.add(itemCategory);
-        }
-
-        return selectedCategories;
+    public void goToAdd(View view) {
+        Intent intent = new Intent(BeaconAndEggs.this, ItemSearch.class);
+        startActivity(intent);
     }
-
-    /**
-     * Determines the closest beacon with an item & category on the listview
+	
+	 /**
+     * Called when the Menu item for recipe search is clicked
+     *
+     * @param item recipe search menu item
      */
-    public void getLocationOfItems() {
+	public void onClickShowRecipeSearch(MenuItem item){
+        Intent intent = new Intent(BeaconAndEggs.this, RecipeSearch.class);
+        startActivity(intent);
 
-        // what is the closest beacon with a selected category?
-        /*List<Beacon> list = new ArrayList<Beacon>();
-        Beacon closestBeacon = null;
-        Map<Beacon, List<Category>> beacons = new HashMap<Beacon, List<Category>>();
-        if (!list.isEmpty()) {
-            // grab the closest beacon with a category selected
-            BEACONLOOP: for (Beacon beacon: list) {
-
-                List<Category> beaconCategories = beacons.get(beacon);
-
-                for (Category cat: beaconCategories) {
-                    if (selectedCategories.contains(cat)) {
-                        closestBeacon = beacon;
-                        break BEACONLOOP;
-                    }
-                }
-            }
-        }*/
-
-        // now we have the closest beacon, highlight on map
-        // mark as visited and repeat
     }
 }
