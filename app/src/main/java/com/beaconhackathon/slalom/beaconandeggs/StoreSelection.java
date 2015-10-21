@@ -19,7 +19,6 @@ import java.util.ArrayList;
 public class StoreSelection  extends Activity {
 
     private MapView mv;
-    private Handler myHandler;
     private ItemizedIconOverlay itemizedIconOverlayGT;
     private Marker marker;
 
@@ -28,7 +27,6 @@ public class StoreSelection  extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.map_view);
 
-        myHandler = new Handler();
         mv = (MapView) findViewById(R.id.mapview);
         mv.setMinZoomLevel(mv.getTileProvider().getMinimumZoomLevel());
         mv.setMaxZoomLevel(mv.getTileProvider().getMaximumZoomLevel());

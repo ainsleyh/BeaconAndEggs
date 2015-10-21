@@ -16,13 +16,4 @@
         mapbox:mapid="ainsleyh.cif5tdgtv0a48smku94dguwxe"
         mapbox:accessToken="pk.eyJ1IjoiYWluc2xleWgiLCJhIjoiY2lmNXRkaTY2MDM0MzdzbHUzNHFuYTNqbiJ9.d1FDa54ohs6VNDTl5b8eFQ"/>
 
-
-     <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="400dp"
-        android:id="@+id/imageView"
-        android:scaleType="fitXY"
-        android:layout_gravity="center_vertical"
-        />
-
 </LinearLayout>
