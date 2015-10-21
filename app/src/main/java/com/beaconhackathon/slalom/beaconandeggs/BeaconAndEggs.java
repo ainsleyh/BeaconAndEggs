@@ -55,7 +55,7 @@ public class BeaconAndEggs extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_beacon_and_eggs);
 
-        userItemListDB = new ItemListDatabaseHelper(getApplicationContext());
+        userItemListDB = new ItemListDatabaseHelper(getApplicationContext(), "UserItemList", "ItemName");
 
         groceryCart= new GroceryCart(fillItemList());
 
