@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/BeaconAndEggs.iml" filepath="$PROJECT_DIR$/BeaconAndEggs.iml" />
+      <module fileurl="file://$PROJECT_DIR$/BeaconAndEggsFork.iml" filepath="$PROJECT_DIR$/BeaconAndEggsFork.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>

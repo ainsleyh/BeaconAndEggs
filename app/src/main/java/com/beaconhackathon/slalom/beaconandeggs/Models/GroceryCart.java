@@ -14,14 +14,12 @@ import java.util.List;
  */
 public class GroceryCart implements Serializable {
 
-    public GroceryCart() {
-        items = new ArrayList<Item>();
-    }
-
-
     /**
      * A list of grocery items
      */
     public List<Item> items;
 
+    public GroceryCart(List<Item> theList) {
+        items = theList;
+    }
 }

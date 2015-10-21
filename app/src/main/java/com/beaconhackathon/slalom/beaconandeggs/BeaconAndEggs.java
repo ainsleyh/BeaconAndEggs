@@ -12,6 +12,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -45,9 +46,11 @@ public class BeaconAndEggs extends Activity {
 
         userItemListDB = new UserItemListDatabaseHelper(getApplicationContext());
 
+        groceryCart= new GroceryCart(fillItemList());
+
         final ListView groceryListView = (ListView) findViewById(R.id.groceryListView);
 
-        mListViewAdapter = new ListViewAdapter(this);
+        mListViewAdapter = new ListViewAdapter(this, groceryCart);
 
         groceryListView.setAdapter(mListViewAdapter);
 
@@ -100,7 +103,6 @@ public class BeaconAndEggs extends Activity {
 
         // TODO populate categories with json data & remove this
         availableCategories = new ArrayList<>();
-        groceryCart= new GroceryCart();
 
     }
 
@@ -126,14 +128,14 @@ public class BeaconAndEggs extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    private ArrayList<String> fillItemList() {
-        LinkedList<String> items = new LinkedList<>();
+    private ArrayList<Item> fillItemList() {
+        LinkedList<Item> items = new LinkedList<>();
         Cursor itemsCursor = userItemListDB.getAllItems(
                 userItemListDB.getReadableDatabase()
         );
         itemsCursor.moveToFirst();
         while (!itemsCursor.isAfterLast()) {
-            items.add(itemsCursor.getString(0));
+            items.add(new Item(itemsCursor.getString(0), null, null));
             itemsCursor.moveToNext();
         }
         return new ArrayList<>(items);

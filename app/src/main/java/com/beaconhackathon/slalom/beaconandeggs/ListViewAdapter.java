@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.beaconhackathon.slalom.beaconandeggs.Models.GroceryCart;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 import com.daimajia.swipe.adapters.BaseSwipeAdapter;
@@ -17,11 +18,12 @@ import com.daimajia.swipe.SwipeLayout;
  * Created by httpnick on 10/15/15.
  */
 public class ListViewAdapter extends BaseSwipeAdapter {
-    private
-    Context mContext;
+    private Context mContext;
+    private GroceryCart _gc;
 
-    public ListViewAdapter(Context mContext) {
+    public ListViewAdapter(Context mContext, GroceryCart gc) {
         this.mContext = mContext;
+        _gc = gc;
     }
 
     @Override
@@ -68,13 +70,13 @@ public class ListViewAdapter extends BaseSwipeAdapter {
 
     @Override
     public void fillValues(int position, View convertView) {
-        TextView t = (TextView)convertView.findViewById(R.id.position);
-        t.setText((position + 1) + ".");
+        TextView t = (TextView)convertView.findViewById(R.id.text_data);
+        t.setText(_gc.items.get(position).name);
     }
 
     @Override
     public int getCount() {
-        return 50;
+        return _gc.items.size();
     }
 
     @Override
