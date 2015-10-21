@@ -8,8 +8,11 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
+
 import org.json.*;
 
 import com.beaconhackathon.slalom.beaconandeggs.Models.Category;
@@ -28,13 +31,9 @@ public class BeaconAndEggs extends Activity {
 
     private GroceryCart groceryCart;
 
-
-    private ItemListDatabaseHelper userItemListDB;
-
     private Store selectedStore;
 
-    private UserItemListDatabaseHelper userItemListDB;
-
+    private ItemListDatabaseHelper userItemListDB;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +65,19 @@ public class BeaconAndEggs extends Activity {
             Item item = (Item) extras.get("item");
             groceryCart.items.add(item);
         }
+
+        ListView groceryListItemView = (ListView)findViewById(R.id.groceryListView);
+        groceryListItemView.setOnItemLongClickListener(new ListView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                String itemName = (String) ((TextView) view).getText();
+                ItemListDatabaseHelper ingredientDBHelper = new ItemListDatabaseHelper(getApplicationContext(), "Ingredients", "IngredientName");
+                if (!ingredientDBHelper.dbContainsItem(ingredientDBHelper.getReadableDatabase(), itemName)) {
+                    ingredientDBHelper.insertItem(ingredientDBHelper.getWritableDatabase(), itemName);
+                }
+                return true;
+            }
+        });
     }
 
     @Override

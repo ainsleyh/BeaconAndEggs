@@ -1,11 +1,13 @@
 package com.beaconhackathon.slalom.beaconandeggs;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
+import android.widget.ExpandableListView;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.TextView;
@@ -34,7 +36,8 @@ public class RecipeSearch extends Activity {
 
     private ItemListDatabaseHelper mIngredientListDB;
     private ArrayList<String> mIngredientListItems;
-    private ArrayList<String> mRecipeResults; //change to ArrayList<Recipe> after implementing recipeAdapter
+    private IngredientListAdapter mIngredientListAdapter;
+    private RecipeListAdapter mRecipeListAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,42 +46,37 @@ public class RecipeSearch extends Activity {
 
         mIngredientListDB = new ItemListDatabaseHelper(getApplicationContext(),"Ingredients","IngredientName");
 
-        mIngredientListDB.removeItem(mIngredientListDB.getWritableDatabase(), "cheese");
-        mIngredientListDB.insertItem(mIngredientListDB.getWritableDatabase(), "cheese");
-
         ListView ingredientListView = (ListView) findViewById(R.id.ingredientListView);
         mIngredientListItems = fillItemList();
-        IngredientListAdapter ingredientListAdapter = new IngredientListAdapter(
+        mIngredientListAdapter = new IngredientListAdapter(
                 this,
+                R.id.ingredientListRow,
                 mIngredientListItems
         );
-        ingredientListAdapter.setNotifyOnChange(true);
-        ingredientListView.setAdapter(ingredientListAdapter);
+        mIngredientListAdapter.setNotifyOnChange(true);
+        ingredientListView.setAdapter(mIngredientListAdapter);
 
-        //TODO: create custom recipe adapter for custom recipe view
-        mRecipeResults = new ArrayList<String>();
-        ListView recipeListView = (ListView) findViewById(R.id.recipeSearchListView);
-        ArrayAdapter recipeListAdapter = new ArrayAdapter(
+        ExpandableListView recipeListView = (ExpandableListView) findViewById(R.id.recipeSearchListView);
+        mRecipeListAdapter = new RecipeListAdapter(
                 this,
-                R.layout.recipe_search_list_item,
-                mRecipeResults
+                R.id.recipeListRow,
+                new ArrayList<Recipe>()
         );
-        recipeListAdapter.setNotifyOnChange(true);
-        recipeListView.setAdapter(recipeListAdapter);
+        recipeListView.setAdapter(mRecipeListAdapter);
 
         SearchView searchView = (SearchView) findViewById(R.id.recipeSearchView);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 submitRecipeSearchQuery();
-                return false;
+                return true;
             }
 
 
             @Override
             public boolean onQueryTextChange(String newText) {
                 submitRecipeSearchQuery();
-                return false;
+                return true;
             }
         });
 
@@ -101,18 +99,46 @@ public class RecipeSearch extends Activity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_beacon_and_eggs, menu);
+        getMenuInflater().inflate(R.menu.menu_recipe_search, menu);
         return true;
     }
 
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        //call recipe search activity
+        //this functionality may be refactored from the menu
+        if (id==R.id.action_showGroceryCart){
+            onClickShowGroceryCart(item);
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    public void onClickShowGroceryCart (MenuItem item){
+        Intent intent = new Intent(this,BeaconAndEggs.class);
+        startActivity(intent);
+
+    }
     public void onClickRemoveIngredient(View v)
     {
         View ingredientRow = (View) v.getParent();
         String ingredientName = (String)((TextView)ingredientRow.findViewById(R.id.ingredient_list_row_text)).getText();
         mIngredientListDB.removeItem(mIngredientListDB.getWritableDatabase(), (String) ingredientName);
-        IngredientListAdapter ingredientListAdapter = (IngredientListAdapter)((ListView) findViewById(R.id.ingredientListView)).getAdapter();
-        mIngredientListItems.remove(ingredientName);
-        ingredientListAdapter.notifyDataSetChanged();
+        mIngredientListAdapter = (IngredientListAdapter)((ListView) findViewById(R.id.ingredientListView)).getAdapter();
+        mIngredientListAdapter.remove(ingredientName);
+        mIngredientListAdapter.notifyDataSetChanged();
         submitRecipeSearchQuery();
     }
 
@@ -146,14 +172,13 @@ public class RecipeSearch extends Activity {
             if(recipeResults!= null) {
                 JSONObject recipeJSON = new JSONObject(recipeResults);
                 JSONArray recipeMatches = (JSONArray) recipeJSON.get("matches");
-                mRecipeResults.clear();
+                mRecipeListAdapter.clear();
                 for (int i = 0; i < recipeMatches.length(); i++) {
                     JSONObject currentRecipe = (JSONObject) recipeMatches.get(i);
-                    String recipeName = (String) currentRecipe.get("recipeName");
-                    mRecipeResults.add(recipeName);
+                    Recipe recipeResult = new Recipe(currentRecipe);
+                    mRecipeListAdapter.add(recipeResult);
                 }
-                ArrayAdapter recipeListAdapter = (ArrayAdapter) ((ListView) findViewById(R.id.recipeSearchListView)).getAdapter();
-                recipeListAdapter.notifyDataSetChanged();
+//                mRecipeListAdapter.notifyDataSetChanged();
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -182,7 +207,7 @@ public class RecipeSearch extends Activity {
             return recipeResults;
         }
 
-        //reads results of yummly api call and returns as a string
+        //reads results of yummly api call and returns search results as a string
         private String readOutputStream(InputStream recipeStream) {
             StringBuffer output = new StringBuffer("");
             try {
