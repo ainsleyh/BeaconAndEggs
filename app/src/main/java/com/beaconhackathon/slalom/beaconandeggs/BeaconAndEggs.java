@@ -1,15 +1,21 @@
 package com.beaconhackathon.slalom.beaconandeggs;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 import org.json.*;
 
 import com.beaconhackathon.slalom.beaconandeggs.Models.Category;
@@ -23,12 +29,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.UUID;
+
+import com.daimajia.swipe.SwipeLayout;
+import com.daimajia.swipe.util.Attributes;
 
 public class BeaconAndEggs extends Activity {
 
     private GroceryCart groceryCart;
-
 
     private ItemListDatabaseHelper userItemListDB;
 
@@ -37,6 +46,10 @@ public class BeaconAndEggs extends Activity {
     private Notifications notifications;
 
 
+    private ListViewAdapter mListViewAdapter;
+
+    private Context mContext = this;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,23 +57,64 @@ public class BeaconAndEggs extends Activity {
 
         userItemListDB = new ItemListDatabaseHelper(getApplicationContext());
 
-        ListView groceryListView = (ListView) findViewById(R.id.groceryListView);
+        groceryCart= new GroceryCart(fillItemList());
 
+        final ListView groceryListView = (ListView) findViewById(R.id.groceryListView);
         notifications = new Notifications();
-        ArrayList<String> groceryListItems = fillItemList();
 
-        ArrayAdapter<String> groceryListAdapter = new ArrayAdapter<>(
-                this,
-                R.layout.grocery_list_item,
-                groceryListItems
-        );
+        mListViewAdapter = new ListViewAdapter(this, groceryCart);
 
-        groceryListView.setAdapter(groceryListAdapter);
+        groceryListView.setAdapter(mListViewAdapter);
+
+        mListViewAdapter.setMode(Attributes.Mode.Single);
+
+        groceryListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                ((SwipeLayout) (groceryListView.getChildAt(
+                        position - groceryListView.getFirstVisiblePosition()))).open(true);
+            }
+        });
+        groceryListView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                Log.e("ListView", "OnTouch");
+                return false;
+            }
+        });
+        groceryListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                Toast.makeText(mContext, "OnItemLongClickListener", Toast.LENGTH_SHORT).show();
+                return true;
+            }
+        });
+        groceryListView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+                Log.e("ListView", "onScrollStateChanged");
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+
+            }
+        });
+
+        groceryListView.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Log.e("ListView", "onItemSelected:" + position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                Log.e("ListView", "onNothingSelected:");
+            }
+        });
 
         // populate available items in the store, and categories
         populateAvailableCategories();
-
-        groceryCart = new GroceryCart();
 
         //See if the new items are being added to the list
         Bundle extras = getIntent().getExtras();
@@ -100,14 +154,14 @@ public class BeaconAndEggs extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    private ArrayList<String> fillItemList() {
-        LinkedList<String> items = new LinkedList<>();
+    private ArrayList<Item> fillItemList() {
+        LinkedList<Item> items = new LinkedList<>();
         Cursor itemsCursor = userItemListDB.getAllItems(
                 userItemListDB.getReadableDatabase()
         );
         itemsCursor.moveToFirst();
         while (!itemsCursor.isAfterLast()) {
-            items.add(itemsCursor.getString(0));
+            items.add(new Item(itemsCursor.getString(0), null, null));
             itemsCursor.moveToNext();
         }
         return new ArrayList<>(items);

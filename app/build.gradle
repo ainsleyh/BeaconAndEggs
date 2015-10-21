@@ -25,7 +25,12 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile(name:'estimote-sdk', ext:'aar')
-    compile 'com.android.support:recyclerview-v7:23.0.+'
+    compile 'com.android.support:recyclerview-v7:23.0.1'
+    compile 'com.android.support:support-v4:23.0.1'
+    compile "com.daimajia.swipelayout:library:1.2.0@aar"
+    compile 'com.nineoldandroids:library:2.4.0'
+    compile 'com.daimajia.easing:library:1.0.1@aar'
+    compile 'com.daimajia.androidanimations:library:1.1.3@aar'
     dependencies {compile 'com.google.code.gson:gson:2.3+'}
     compile ('com.mapbox.mapboxsdk:mapbox-android-sdk:0.7.4@aar'){
         transitive=true }
