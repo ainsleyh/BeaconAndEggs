@@ -11,6 +11,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -57,6 +59,13 @@ public class BeaconAndEggs extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //Remove title bar
+        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+
+        //Remove notification bar
+        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         setContentView(R.layout.activity_beacon_and_eggs);
 
         userItemListDB = new ItemListDatabaseHelper(getApplicationContext(), "UserItemList", "ItemName");
@@ -84,13 +93,6 @@ public class BeaconAndEggs extends Activity {
             public boolean onTouch(View v, MotionEvent event) {
                 Log.e("ListView", "OnTouch");
                 return false;
-            }
-        });
-        groceryListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(mContext, "OnItemLongClickListener", Toast.LENGTH_SHORT).show();
-                return true;
             }
         });
         groceryListView.setOnScrollListener(new AbsListView.OnScrollListener() {
@@ -163,10 +165,10 @@ public class BeaconAndEggs extends Activity {
 
         //call recipe search activity
         //this functionality may be refactored from the menu
-        if (id==R.id.action_showRecipeSearch){
+        /*if (id==R.id.action_showRecipeSearch){
             onClickShowRecipeSearch(item);
             return true;
-        }
+        }*/
 
         return super.onOptionsItemSelected(item);
     }
@@ -276,7 +278,7 @@ public class BeaconAndEggs extends Activity {
      *
      * @param item recipe search menu item
      */
-    public void onClickShowRecipeSearch(MenuItem item){
+    public void onClickShowRecipeSearch(View item){
         Intent intent = new Intent(BeaconAndEggs.this, RecipeSearch.class);
         startActivity(intent);
 
