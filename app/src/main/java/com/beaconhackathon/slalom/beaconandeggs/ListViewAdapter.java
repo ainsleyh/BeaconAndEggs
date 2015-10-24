@@ -33,9 +33,9 @@ public class ListViewAdapter extends BaseSwipeAdapter {
     }
 
     @Override
-    public View generateView(int position, ViewGroup parent) {
-        View v = LayoutInflater.from(mContext).inflate(R.layout.listview_item, null);
-        SwipeLayout swipeLayout = (SwipeLayout)v.findViewById(getSwipeLayoutResourceId(position));
+    public View generateView(final int position, final ViewGroup parent) {
+        final View v = LayoutInflater.from(mContext).inflate(R.layout.listview_item, null);
+        final SwipeLayout swipeLayout = (SwipeLayout)v.findViewById(getSwipeLayoutResourceId(position));
         swipeLayout.addSwipeListener(new SimpleSwipeListener() {
             @Override
             public void onOpen(SwipeLayout layout) {
@@ -59,6 +59,10 @@ public class ListViewAdapter extends BaseSwipeAdapter {
         v.findViewById(R.id.delete).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                removeShownLayouts(swipeLayout);
+                _gc.removeAtIndex(position);
+                notifyDataSetChanged();
+                closeAllItems();
                 Toast.makeText(
                         mContext,
                         "click delete",
@@ -72,17 +76,17 @@ public class ListViewAdapter extends BaseSwipeAdapter {
     @Override
     public void fillValues(int position, View convertView) {
         TextView t = (TextView)convertView.findViewById(R.id.text_data);
-        t.setText(_gc.items.get(position).name);
+        t.setText(_gc.getItemByIndex(position).name);
     }
 
     @Override
     public int getCount() {
-        return _gc.items.size();
+        return _gc.getItemListLength();
     }
 
     @Override
     public Object getItem(int position) {
-        return _gc.items.get(position);
+        return _gc.getItemByIndex(position);
     }
 
     @Override

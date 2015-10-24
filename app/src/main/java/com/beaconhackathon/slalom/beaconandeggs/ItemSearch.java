@@ -5,6 +5,7 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -86,7 +87,7 @@ public class ItemSearch extends ListActivity {
                 writer.write(buffer, 0, n);
             }
         } catch (IOException e) {
-            //todo don't know what to do
+            Log.e("Error", e.getMessage());
         }
 
         String jsonString = writer.toString();

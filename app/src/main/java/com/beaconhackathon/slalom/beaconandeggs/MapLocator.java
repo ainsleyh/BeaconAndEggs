@@ -147,7 +147,7 @@ public class MapLocator extends Activity {
 
         List<Category> selectedCategories = new ArrayList<>();
 
-        for (Item item : groceryCart.items) {
+        for (Item item : groceryCart) {
             Category itemCategory = null;
             for (Category category : store.availableCategories) {
                 if (category.id.equals(item.categoryID)) {
