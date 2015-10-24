@@ -1,7 +1,6 @@
 package com.beaconhackathon.slalom.beaconandeggs.Models;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -56,4 +55,13 @@ public class Item implements Serializable {
      */
     public State state;
 
+    @Override
+    public boolean equals(Object otherItem) {
+        return
+                otherItem != null &&
+                        otherItem instanceof Item &&
+                        name.equals(
+                                ((Item) otherItem).name
+                        );
+    }
 }

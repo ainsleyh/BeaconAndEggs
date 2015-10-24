@@ -2,7 +2,6 @@ package com.beaconhackathon.slalom.beaconandeggs;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -15,6 +14,8 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.AbsListView;
+import android.widget.Toast;
+
 import org.json.*;
 import com.beaconhackathon.slalom.beaconandeggs.Models.Category;
 import com.beaconhackathon.slalom.beaconandeggs.Models.GroceryCart;
@@ -25,7 +26,6 @@ import com.beaconhackathon.slalom.beaconandeggs.Models.Store;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.UUID;
 import com.daimajia.swipe.SwipeLayout;
 import com.daimajia.swipe.util.Attributes;
@@ -33,8 +33,6 @@ import com.daimajia.swipe.util.Attributes;
 public class BeaconAndEggs extends Activity {
 
     private GroceryCart groceryCart;
-
-    private ItemListDatabaseHelper userItemListDB;
 
     private Store selectedStore;
 
@@ -55,13 +53,15 @@ public class BeaconAndEggs extends Activity {
 
         setContentView(R.layout.activity_beacon_and_eggs);
 
-        userItemListDB = new ItemListDatabaseHelper(
-                getApplicationContext(),
-                "UserItemList",
-                "ItemName"
+        groceryCart = new GroceryCart(
+                new ItemListDatabaseHelper(
+                        getApplicationContext(),
+                        "UserItemList",
+                        "ItemName"
+                )
         );
-
-        groceryCart= new GroceryCart(fillItemList());
+        // See if we need to add an item from extras.
+        checkToAddItem();
 
         final ListView groceryListView = (ListView) findViewById(R.id.groceryListView);
         notifications = new Notifications();
@@ -110,27 +110,6 @@ public class BeaconAndEggs extends Activity {
             }
         });
 
-        // populate available items in the store, and categories
-        populateAvailableCategories();
-
-        //See if the new items are being added to the list
-        Bundle extras = getIntent().getExtras();
-        if (extras != null) {
-            Item itemToAdd = (Item) extras.get("item");
-            if (itemToAdd != null) {
-                if (!userItemListDB.dbContainsItem(
-                        userItemListDB.getReadableDatabase(),
-                        itemToAdd.name)
-                        ) {
-                    userItemListDB.insertItem(
-                            userItemListDB.getWritableDatabase(),
-                            itemToAdd.name
-                    );
-                    groceryCart.items.add(itemToAdd);
-                }
-            }
-        }
-
         groceryListView.setOnItemLongClickListener(new ListView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
@@ -151,6 +130,9 @@ public class BeaconAndEggs extends Activity {
                 return true;
             }
         });
+
+        // populate available items in the store, and categories
+        populateAvailableCategories();
     }
 
     @Override
@@ -181,19 +163,6 @@ public class BeaconAndEggs extends Activity {
         }*/
 
         return super.onOptionsItemSelected(item);
-    }
-
-    private ArrayList<Item> fillItemList() {
-        LinkedList<Item> items = new LinkedList<>();
-        Cursor itemsCursor = userItemListDB.getAllItems(
-                userItemListDB.getReadableDatabase()
-        );
-        itemsCursor.moveToFirst();
-        while (!itemsCursor.isAfterLast()) {
-            items.add(new Item(itemsCursor.getString(0), null, null));
-            itemsCursor.moveToNext();
-        }
-        return new ArrayList<>(items);
     }
 
     /**
@@ -292,5 +261,23 @@ public class BeaconAndEggs extends Activity {
         Intent intent = new Intent(BeaconAndEggs.this, RecipeSearch.class);
         startActivity(intent);
 
+    }
+
+    private void checkToAddItem() {
+        //See if the new items are being added to the list
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            Item itemToAdd = (Item) extras.get("item");
+            if (itemToAdd != null) {
+                if (!groceryCart.addItemToCart(itemToAdd)) {
+                    Toast.makeText(
+                            getApplicationContext(),
+                            itemToAdd.name +
+                                    " already exists in your list!",
+                            Toast.LENGTH_SHORT
+                    ).show();
+                }
+            }
+        }
     }
 }
