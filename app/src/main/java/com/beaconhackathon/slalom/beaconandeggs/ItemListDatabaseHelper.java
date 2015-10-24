@@ -56,7 +56,8 @@ public class ItemListDatabaseHelper extends SQLiteOpenHelper {
         ContentValues insertValues = new ContentValues();
         insertValues.put(ITEM_NAME_COLUMN, itemName);
 
-        return db.insert(DB_NAME,
+        return db.insert(
+                DB_NAME,
                 null,
                 insertValues
         );
@@ -113,8 +114,9 @@ public class ItemListDatabaseHelper extends SQLiteOpenHelper {
                 new String[]{itemName},
                 "","",""
         );
+        int count = resultCount.getCount();
         resultCount.close();
-        return resultCount.getCount() > 0;
+        return count > 0;
     }
 
 

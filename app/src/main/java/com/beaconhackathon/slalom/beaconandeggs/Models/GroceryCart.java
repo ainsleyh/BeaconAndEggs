@@ -22,8 +22,12 @@ public class GroceryCart implements Serializable, Iterable<Item> {
 
     private ItemListDatabaseHelper itemDatabase;
 
-    public GroceryCart(ItemListDatabaseHelper theItemDatabase) {
+    private ItemListDatabaseHelper recipeDatabase;
+
+    public GroceryCart(ItemListDatabaseHelper theItemDatabase,
+                       ItemListDatabaseHelper theRecipeDatabase) {
         itemDatabase = theItemDatabase;
+        recipeDatabase = theRecipeDatabase;
         items = fillItemList();
     }
 
@@ -46,6 +50,35 @@ public class GroceryCart implements Serializable, Iterable<Item> {
         }
     }
 
+    public boolean addItemToRecipe(Item theItem) {
+        if (!recipeDatabase.dbContainsItem(
+                recipeDatabase.getReadableDatabase(),
+                theItem.name)
+                ) {
+            recipeDatabase.insertItem(
+                    recipeDatabase.getWritableDatabase(),
+                    theItem.name
+                    );
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private void removeItemFromRecipe(Item theItem) {
+        recipeDatabase.removeItem(
+                recipeDatabase.getWritableDatabase(),
+                theItem.name
+        );
+    }
+
+    private void removeItemFromMainList(Item theItem) {
+        itemDatabase.removeItem(
+                itemDatabase.getWritableDatabase(),
+                theItem.name
+        );
+    }
+
     public Item getItemByIndex(int theIndex) {
         return items.get(theIndex);
     }
@@ -59,10 +92,9 @@ public class GroceryCart implements Serializable, Iterable<Item> {
     }
 
     public void removeAtIndex(int theIndex) {
-        itemDatabase.removeItem(
-                itemDatabase.getWritableDatabase(),
-                items.get(theIndex).name
-        );
+        Item itemToRemove = items.get(theIndex);
+        removeItemFromMainList(itemToRemove);
+        removeItemFromRecipe(itemToRemove);
         items.remove(theIndex);
     }
 
