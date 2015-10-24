@@ -58,6 +58,11 @@ public class BeaconAndEggs extends Activity {
                         getApplicationContext(),
                         "UserItemList",
                         "ItemName"
+                ),
+                new ItemListDatabaseHelper(
+                        getApplicationContext(),
+                        "Ingredients",
+                        "IngredientName"
                 )
         );
         // See if we need to add an item from extras.
@@ -114,18 +119,13 @@ public class BeaconAndEggs extends Activity {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 Item currItem = (Item) parent.getItemAtPosition(position);
-
-                ItemListDatabaseHelper ingredientDBHelper = new ItemListDatabaseHelper(
-                        getApplicationContext(),
-                        "Ingredients",
-                        "IngredientName"
-                );
-
-                if (!ingredientDBHelper.dbContainsItem(ingredientDBHelper.getReadableDatabase(), currItem.name)) {
-                    ingredientDBHelper.insertItem(
-                            ingredientDBHelper.getWritableDatabase(),
-                            currItem.name
-                    );
+                if (!groceryCart.addItemToRecipe(currItem)) {
+                    Toast.makeText(
+                            getApplicationContext(),
+                            currItem.name +
+                                    " already exists in your recipe list!",
+                            Toast.LENGTH_SHORT
+                    ).show();
                 }
                 return true;
             }
