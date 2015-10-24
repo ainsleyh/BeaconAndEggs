@@ -16,6 +16,7 @@ import com.daimajia.swipe.SwipeLayout;
 
 /**
  * Created by httpnick on 10/15/15.
+ * List view adapter to display main page grocery list.
  */
 public class ListViewAdapter extends BaseSwipeAdapter {
     private Context mContext;
@@ -81,7 +82,7 @@ public class ListViewAdapter extends BaseSwipeAdapter {
 
     @Override
     public Object getItem(int position) {
-        return null;
+        return _gc.items.get(position);
     }
 
     @Override

@@ -1,27 +1,19 @@
 package com.beaconhackathon.slalom.beaconandeggs;
 
-import android.app.Activity;
 import android.app.ListActivity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.SearchView;
-import android.widget.SimpleAdapter;
-
 import com.beaconhackathon.slalom.beaconandeggs.Models.Categories;
 import com.beaconhackathon.slalom.beaconandeggs.Models.Category;
 import com.beaconhackathon.slalom.beaconandeggs.Models.Item;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,7 +28,6 @@ import com.google.gson.GsonBuilder;
 
 public class ItemSearch extends ListActivity {
 
-    private static final String LOG_TAG = "ItemSearchActivity";
     private List<Item> itemList;
     Context context = ItemSearch.this;
 
@@ -65,7 +56,7 @@ public class ItemSearch extends ListActivity {
 
     private void searchItems(String query) {
         query = query.toLowerCase();
-        List<Item> results = new ArrayList<Item>();
+        List<Item> results = new ArrayList<>();
         for(Item item: itemList) {
             String name = item.name.toLowerCase();
             if (name.contains(query)) {
@@ -104,7 +95,7 @@ public class ItemSearch extends ListActivity {
     }
 
     private void setInitialItems(Categories categories) {
-        itemList = new ArrayList<Item>();
+        itemList = new ArrayList<>();
         for (Category category: categories.categories) {
             itemList.addAll(category.items);
         }
@@ -113,8 +104,10 @@ public class ItemSearch extends ListActivity {
     private Categories convertToJson(String jsonString) {
         GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();
-        Categories categories = gson.fromJson(jsonString, Categories.class);
-        return categories;
+        return gson.fromJson(
+                jsonString,
+                Categories.class
+        );
     }
 
 
