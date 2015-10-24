@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -20,14 +21,14 @@ import java.util.List;
 public class IngredientListAdapter extends ArrayAdapter<String> {
 
     private Activity mContext;
-//    private int mLayoutResourceId;
+    private int mLayoutResourceId;
     private String[] mIngredients;
 
-    public IngredientListAdapter(Activity context, ArrayList<String> ingredients) {
+    public IngredientListAdapter(Activity context, int layoutResourceId, ArrayList<String> ingredients) {
         super(context, -1, ingredients);
         this.mContext = context;
         this.mIngredients = ingredients.toArray(new String[0]);
-//        this.mLayoutResourceId = layoutResourceId;
+        this.mLayoutResourceId = layoutResourceId;
 
     }
 

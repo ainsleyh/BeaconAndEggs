@@ -56,10 +56,4 @@ public class Item implements Serializable {
      */
     public State state;
 
-    /**
-     * The Recipes the item can be found in
-     * todo is this needed with the recipe api?
-     */
-    public List<Recipe> recipes;
-
 }

@@ -99,9 +99,23 @@ public class ItemListDatabaseHelper extends SQLiteOpenHelper {
 
         return db.delete(
                 DB_NAME,
-                ITEM_NAME_COLUMN + "= '" + itemName +"'",
+                ITEM_NAME_COLUMN + "= '" + itemName + "'",
                 null
         );
     }
+
+    /**
+     * returns true if an item exists in the db.
+     * @param db reference to which db to query.
+     * @param itemName name of item to query existence of.
+     * @return whether item exists in the database.
+     */
+    public boolean dbContainsItem(SQLiteDatabase db, String itemName) {
+
+        Cursor resultCount = db.query(DB_NAME,new String[]{ITEM_NAME_COLUMN},ITEM_NAME_COLUMN+" = ?",new String[]{itemName},"","","");
+        return resultCount.getCount() > 0;
+    }
+
+
 
 }

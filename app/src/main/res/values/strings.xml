@@ -11,4 +11,5 @@
     <string name="search_placeholder">Milk, Eggs, Bacon...</string>
     <string name="add">Add</string>
     <string name="title_activity_searchable">SearchableActivity</string>
+    <string name="action_showGroceryCart">Grocery Cart</string>
 </resources>
