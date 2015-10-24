@@ -1,7 +1,6 @@
 package com.beaconhackathon.slalom.beaconandeggs;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -14,30 +13,20 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
-
-
 import android.widget.AbsListView;
-import android.widget.AdapterView;
-import android.widget.ListView;
-import android.widget.Toast;
 import org.json.*;
-
 import com.beaconhackathon.slalom.beaconandeggs.Models.Category;
 import com.beaconhackathon.slalom.beaconandeggs.Models.GroceryCart;
 import com.beaconhackathon.slalom.beaconandeggs.Models.Item;
 import com.beaconhackathon.slalom.beaconandeggs.Models.Notifications;
 import com.beaconhackathon.slalom.beaconandeggs.Models.State;
 import com.beaconhackathon.slalom.beaconandeggs.Models.Store;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.UUID;
-
 import com.daimajia.swipe.SwipeLayout;
 import com.daimajia.swipe.util.Attributes;
 
@@ -51,10 +40,6 @@ public class BeaconAndEggs extends Activity {
 
     private Notifications notifications;
 
-    private ListViewAdapter mListViewAdapter;
-
-    private Context mContext = this;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,19 +48,25 @@ public class BeaconAndEggs extends Activity {
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
         //Remove notification bar
-        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        this.getWindow().setFlags(
+                WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN
+        );
 
         setContentView(R.layout.activity_beacon_and_eggs);
 
-        userItemListDB = new ItemListDatabaseHelper(getApplicationContext(), "UserItemList", "ItemName");
+        userItemListDB = new ItemListDatabaseHelper(
+                getApplicationContext(),
+                "UserItemList",
+                "ItemName"
+        );
 
         groceryCart= new GroceryCart(fillItemList());
 
         final ListView groceryListView = (ListView) findViewById(R.id.groceryListView);
         notifications = new Notifications();
 
-        mListViewAdapter = new ListViewAdapter(this, groceryCart);
+        ListViewAdapter mListViewAdapter = new ListViewAdapter(this, groceryCart);
 
         groceryListView.setAdapter(mListViewAdapter);
 
@@ -125,18 +116,37 @@ public class BeaconAndEggs extends Activity {
         //See if the new items are being added to the list
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
-            Item item = (Item) extras.get("item");
-            groceryCart.items.add(item);
+            Item itemToAdd = (Item) extras.get("item");
+            if (itemToAdd != null) {
+                if (!userItemListDB.dbContainsItem(
+                        userItemListDB.getReadableDatabase(),
+                        itemToAdd.name)
+                        ) {
+                    userItemListDB.insertItem(
+                            userItemListDB.getWritableDatabase(),
+                            itemToAdd.name
+                    );
+                    groceryCart.items.add(itemToAdd);
+                }
+            }
         }
 
-        ListView groceryListItemView = (ListView)findViewById(R.id.groceryListView);
-        groceryListItemView.setOnItemLongClickListener(new ListView.OnItemLongClickListener() {
+        groceryListView.setOnItemLongClickListener(new ListView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                String itemName = (String) ((TextView) view).getText();
-                ItemListDatabaseHelper ingredientDBHelper = new ItemListDatabaseHelper(getApplicationContext(), "Ingredients", "IngredientName");
-                if (!ingredientDBHelper.dbContainsItem(ingredientDBHelper.getReadableDatabase(), itemName)) {
-                    ingredientDBHelper.insertItem(ingredientDBHelper.getWritableDatabase(), itemName);
+                Item currItem = (Item) parent.getItemAtPosition(position);
+
+                ItemListDatabaseHelper ingredientDBHelper = new ItemListDatabaseHelper(
+                        getApplicationContext(),
+                        "Ingredients",
+                        "IngredientName"
+                );
+
+                if (!ingredientDBHelper.dbContainsItem(ingredientDBHelper.getReadableDatabase(), currItem.name)) {
+                    ingredientDBHelper.insertItem(
+                            ingredientDBHelper.getWritableDatabase(),
+                            currItem.name
+                    );
                 }
                 return true;
             }
@@ -227,7 +237,7 @@ public class BeaconAndEggs extends Activity {
             }
 
         } catch (Exception ex) {
-
+            Log.d("Error", ex.getMessage());
         }
 
     }
@@ -238,7 +248,7 @@ public class BeaconAndEggs extends Activity {
      * @return the json from the file
      */
     public String loadJSONFromAsset() {
-        String json = null;
+        String json;
         try {
             InputStream is = this.getAssets().open("data.json");
             int size = is.available();

@@ -34,10 +34,6 @@ public class ItemListDatabaseHelper extends SQLiteOpenHelper {
      */
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-
-        //if (sqLiteDatabase.con != null)
-        //    return;
-
         sqLiteDatabase.execSQL(
                 "create table if not exists" +
                         " " + DB_NAME + "(" +
@@ -79,7 +75,7 @@ public class ItemListDatabaseHelper extends SQLiteOpenHelper {
     /**
      * query all items in the DB.
      * @param db reference to which db to query.
-     * @return
+     * @return all items in db.
      */
     public Cursor getAllItems(SQLiteDatabase db) {
 
@@ -112,7 +108,14 @@ public class ItemListDatabaseHelper extends SQLiteOpenHelper {
      */
     public boolean dbContainsItem(SQLiteDatabase db, String itemName) {
 
-        Cursor resultCount = db.query(DB_NAME,new String[]{ITEM_NAME_COLUMN},ITEM_NAME_COLUMN+" = ?",new String[]{itemName},"","","");
+        Cursor resultCount = db.query(
+                DB_NAME,
+                new String[]{ITEM_NAME_COLUMN},
+                ITEM_NAME_COLUMN + " = ?",
+                new String[]{itemName},
+                "","",""
+        );
+        resultCount.close();
         return resultCount.getCount() > 0;
     }
 
