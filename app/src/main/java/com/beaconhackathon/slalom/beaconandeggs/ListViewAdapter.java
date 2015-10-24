@@ -51,7 +51,7 @@ public class ListViewAdapter extends BaseSwipeAdapter {
             public void onDoubleClick(SwipeLayout layout, boolean surface) {
                 Toast.makeText(
                         mContext,
-                        "DoubleClick",
+                        "Double Click",
                         Toast.LENGTH_SHORT)
                         .show();
             }
@@ -59,15 +59,18 @@ public class ListViewAdapter extends BaseSwipeAdapter {
         v.findViewById(R.id.delete).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Toast.makeText(
+                        mContext,
+                        "Removed " +
+                        _gc.getItemByIndex(
+                                position
+                        ).name,
+                        Toast.LENGTH_SHORT
+                ).show();
                 removeShownLayouts(swipeLayout);
                 _gc.removeAtIndex(position);
                 notifyDataSetChanged();
                 closeAllItems();
-                Toast.makeText(
-                        mContext,
-                        "click delete",
-                        Toast.LENGTH_SHORT)
-                        .show();
             }
         });
         return v;
