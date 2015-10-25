@@ -24,8 +24,6 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 public class ItemSearch extends ListActivity {
 
@@ -78,20 +76,8 @@ public class ItemSearch extends ListActivity {
     }
 
     private void getItems() {
-        Writer writer = new StringWriter();
-        char[] buffer = new char[1024];
-        try (InputStream is = getResources().openRawResource(R.raw.data)) {
-            Reader reader = new BufferedReader(new InputStreamReader(is));
-            int n;
-            while ((n = reader.read(buffer)) != -1) {
-                writer.write(buffer, 0, n);
-            }
-        } catch (IOException e) {
-            Log.e("Error", e.getMessage());
-        }
-
-        String jsonString = writer.toString();
-        Categories categories = convertToJson(jsonString);
+        String jsonString = JsonHelper.getJsonString(context);
+        Categories categories = JsonHelper.convertToJson(jsonString);
         setInitialItems(categories);
     }
 
@@ -100,15 +86,6 @@ public class ItemSearch extends ListActivity {
         for (Category category: categories.categories) {
             itemList.addAll(category.items);
         }
-    }
-
-    private Categories convertToJson(String jsonString) {
-        GsonBuilder builder = new GsonBuilder();
-        Gson gson = builder.create();
-        return gson.fromJson(
-                jsonString,
-                Categories.class
-        );
     }
 
 
