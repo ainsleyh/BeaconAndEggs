@@ -6,18 +6,29 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.RemoteException;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.AbsListView;
+import android.widget.AdapterView;
+import android.widget.FrameLayout;
+import android.widget.ListView;
+import android.widget.ScrollView;
 
 import com.beaconhackathon.slalom.beaconandeggs.Models.Category;
 import com.beaconhackathon.slalom.beaconandeggs.Models.GroceryCart;
 import com.beaconhackathon.slalom.beaconandeggs.Models.Item;
+import com.beaconhackathon.slalom.beaconandeggs.Models.Items;
+import com.beaconhackathon.slalom.beaconandeggs.Models.Notifications;
 import com.beaconhackathon.slalom.beaconandeggs.Models.Store;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import com.daimajia.swipe.SwipeLayout;
+import com.daimajia.swipe.util.Attributes;
 import com.estimote.sdk.Beacon;
 import com.estimote.sdk.BeaconManager;
 import com.estimote.sdk.Region;
@@ -29,7 +40,7 @@ import com.mapbox.mapboxsdk.views.MapView;
  */
 public class MapLocator extends Activity {
 
-    private GroceryCart groceryCart;
+    private Items groceryCart;
 
     private BeaconManager rangingBeaconManager;
     private Region region;
@@ -37,9 +48,6 @@ public class MapLocator extends Activity {
     private Store store;
 
     private List<Category> selectedCategories;
-
-    private MapView mv;
-    private Handler myHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +62,7 @@ public class MapLocator extends Activity {
 
         // retrieve the grocery list from the previous view
         Intent intent = this.getIntent();
-        groceryCart = (GroceryCart) intent.getSerializableExtra("groceryCart");
+        groceryCart = (Items) intent.getSerializableExtra("groceryCart");
 
         store = (Store) intent.getSerializableExtra("store");
 
@@ -98,6 +106,31 @@ public class MapLocator extends Activity {
             });
         }
 
+        // set up List view
+        final ListView groceryListView = (ListView) findViewById(R.id.listView2);
+        MapListViewAdapter mListViewAdapter = new MapListViewAdapter(this, groceryCart.items);
+        groceryListView.setAdapter(mListViewAdapter);
+        mListViewAdapter.setMode(Attributes.Mode.Single);
+
+        groceryListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                ((SwipeLayout) (groceryListView.getChildAt(
+                        position - groceryListView.getFirstVisiblePosition()))).open(true);
+            }
+        });
+        groceryListView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+                Log.e("ListView", "onScrollStateChanged");
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+
+            }
+        });
+
     }
 
     @Override
@@ -130,15 +163,6 @@ public class MapLocator extends Activity {
     }
 
     /**
-     * Called when the Done button is Click
-     *
-     * @param view the Button
-     */
-    public void onClickBegin(View view) {
-        setContentView(R.layout.map_routing);
-    }
-
-    /**
      * Returns the categories of the items in the listview
      *
      * @return A list of categories
@@ -147,7 +171,7 @@ public class MapLocator extends Activity {
 
         List<Category> selectedCategories = new ArrayList<>();
 
-        for (Item item : groceryCart) {
+        for (Item item : groceryCart.items) {
             Category itemCategory = null;
             for (Category category : store.availableCategories) {
                 if (category.id.equals(item.categoryID)) {

@@ -6,12 +6,14 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.Cursor;
 
+import java.io.Serializable;
+
 /**
  * Created by httpnick on 10/8/15.
  * DB helper to be used within the application
  * to store the user's persistent grocery list.
  */
-public class ItemListDatabaseHelper extends SQLiteOpenHelper {
+public class ItemListDatabaseHelper extends SQLiteOpenHelper implements Serializable {
 
     private String DB_NAME;
     private String ITEM_NAME_COLUMN;

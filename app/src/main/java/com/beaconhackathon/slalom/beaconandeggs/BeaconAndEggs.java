@@ -20,6 +20,7 @@ import org.json.*;
 import com.beaconhackathon.slalom.beaconandeggs.Models.Category;
 import com.beaconhackathon.slalom.beaconandeggs.Models.GroceryCart;
 import com.beaconhackathon.slalom.beaconandeggs.Models.Item;
+import com.beaconhackathon.slalom.beaconandeggs.Models.Items;
 import com.beaconhackathon.slalom.beaconandeggs.Models.Notifications;
 import com.beaconhackathon.slalom.beaconandeggs.Models.State;
 import com.beaconhackathon.slalom.beaconandeggs.Models.Store;
@@ -241,7 +242,10 @@ public class BeaconAndEggs extends Activity {
 
         // change view to MapLocator
         Intent intent = new Intent(BeaconAndEggs.this, MapLocator.class);
-        intent.putExtra("groceryCart", this.groceryCart);
+
+        Items items = new Items();
+        items.items = this.groceryCart.items;
+        intent.putExtra("groceryCart", items);
         intent.putExtra("store", this.selectedStore);
         intent.putExtra("notifications", this.notifications);
         startActivity(intent);
