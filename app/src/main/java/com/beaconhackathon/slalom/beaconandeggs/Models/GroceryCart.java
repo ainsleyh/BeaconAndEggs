@@ -18,7 +18,7 @@ public class GroceryCart implements Serializable, Iterable<Item> {
     /**
      * A list of grocery items
      */
-    private List<Item> items;
+    public List<Item> items;
 
     private ItemListDatabaseHelper itemDatabase;
 

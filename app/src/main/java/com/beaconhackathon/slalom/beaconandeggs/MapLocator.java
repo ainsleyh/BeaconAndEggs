@@ -49,6 +49,8 @@ public class MapLocator extends Activity {
 
     private List<Category> selectedCategories;
 
+    private ListView groceryListView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -107,7 +109,7 @@ public class MapLocator extends Activity {
         }
 
         // set up List view
-        final ListView groceryListView = (ListView) findViewById(R.id.listView2);
+        groceryListView = (ListView) findViewById(R.id.listView2);
         MapListViewAdapter mListViewAdapter = new MapListViewAdapter(this, groceryCart.items);
         groceryListView.setAdapter(mListViewAdapter);
         mListViewAdapter.setMode(Attributes.Mode.Single);
@@ -130,7 +132,6 @@ public class MapLocator extends Activity {
 
             }
         });
-
     }
 
     @Override
