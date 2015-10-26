@@ -2,6 +2,7 @@ package com.beaconhackathon.slalom.beaconandeggs;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,7 +18,6 @@ import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.AbsListView;
-import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,7 +26,6 @@ import com.beaconhackathon.slalom.beaconandeggs.Models.Category;
 import com.beaconhackathon.slalom.beaconandeggs.Models.GroceryCart;
 import com.beaconhackathon.slalom.beaconandeggs.Models.Item;
 import com.beaconhackathon.slalom.beaconandeggs.Models.Items;
-import com.beaconhackathon.slalom.beaconandeggs.Models.Notifications;
 import com.beaconhackathon.slalom.beaconandeggs.Models.State;
 import com.beaconhackathon.slalom.beaconandeggs.Models.Store;
 import java.io.IOException;
@@ -42,6 +41,7 @@ public class BeaconAndEggs extends Activity {
 
     private Store selectedStore;
 
+    private TextView notificationDialogTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +56,8 @@ public class BeaconAndEggs extends Activity {
         );
 
         setContentView(R.layout.activity_beacon_and_eggs);
+
+        notificationDialogTextView = (TextView) findViewById(R.id.notification);
 
         groceryCart = new GroceryCart(
                 new ItemListDatabaseHelper(
@@ -244,16 +246,9 @@ public class BeaconAndEggs extends Activity {
         final Dialog dialog = new Dialog(this);
 
         LinearLayout layout = new LinearLayout(this);
-        dialog.setTitle("Available Coupons");
-
-        layout.setMinimumHeight(400);
-        layout.setMinimumWidth(200);
-
-        TextView textView = new TextView(this);
-        textView.setPadding(20,20,20,20);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
         BeaconApplication app = (BeaconApplication) getApplication();
-
         String coupons = "";
         if (!app.notifications.isEmpty()) {
             for (String coupon : app.notifications) {
@@ -263,10 +258,23 @@ public class BeaconAndEggs extends Activity {
             coupons = "There are currently no coupons available.";
         }
 
-        textView.setText(coupons);
-        layout.addView(textView);
+        notificationDialogTextView.setText(coupons);
+        notificationDialogTextView.setVisibility(View.VISIBLE);
+
+        ViewGroup parent = (ViewGroup)notificationDialogTextView.getParent();
+        parent.removeView(notificationDialogTextView);
+
+        layout.addView(notificationDialogTextView);
 
         dialog.setContentView(layout);
+
+        dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                notificationDialogTextView.setVisibility(View.INVISIBLE);
+            }
+        });
+
         dialog.show();
     }
 
