@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.SearchView;
 import com.beaconhackathon.slalom.beaconandeggs.Models.Categories;
 import com.beaconhackathon.slalom.beaconandeggs.Models.Category;
@@ -69,10 +70,22 @@ public class ItemSearch extends ListActivity {
     }
 
     public void returnAddedItem(View view) {
-        int position = getListView().getPositionForView((LinearLayout) view.getParent());
+        int position = getListView().getPositionForView((RelativeLayout) view.getParent());
         Item item = (Item)adapter.getItem(position);
         Intent myintent = new Intent(ItemSearch.this, BeaconAndEggs.class).putExtra("item", item);
         startActivity(myintent);
+    }
+
+    public void subtractNumber(View view) {
+        int position = getListView().getPositionForView((RelativeLayout) view.getParent());
+        Item item = (Item)adapter.getItem(position);
+        item.quantity--;
+    }
+
+    public void addNumber(View view) {
+        int position = getListView().getPositionForView((RelativeLayout) view.getParent());
+        Item item = (Item)adapter.getItem(position);
+        item.quantity++;
     }
 
     private void getItems() {
