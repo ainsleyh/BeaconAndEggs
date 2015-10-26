@@ -22,12 +22,12 @@ public class IngredientListAdapter extends ArrayAdapter<String> {
 
     private Activity mContext;
     private int mLayoutResourceId;
-    private String[] mIngredients;
+    private ArrayList<String> mIngredients;
 
     public IngredientListAdapter(Activity context, int layoutResourceId, ArrayList<String> ingredients) {
         super(context, -1, ingredients);
         this.mContext = context;
-        this.mIngredients = ingredients.toArray(new String[0]);
+        this.mIngredients = ingredients;
         this.mLayoutResourceId = layoutResourceId;
 
     }
@@ -41,11 +41,18 @@ public class IngredientListAdapter extends ArrayAdapter<String> {
         TextView txtTitle = (TextView) rowView.findViewById(R.id.ingredient_list_row_text);
         ImageButton imageButton = (ImageButton) rowView.findViewById(R.id.remove_ingredient_row);
 
-        txtTitle.setText(mIngredients[position]);
+        txtTitle.setText(mIngredients.get(position));
 
-        imageButton.setBackgroundResource(android.R.drawable.ic_delete);
+        imageButton.setBackgroundResource(R.drawable.trash);
 
         return rowView;
 
-    };
+    }
+
+    @Override
+    public void remove(String ingredientName){
+        this.mIngredients.remove(ingredientName);
+        this.notifyDataSetChanged();
+    }
+
 }

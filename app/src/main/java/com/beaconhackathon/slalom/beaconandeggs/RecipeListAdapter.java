@@ -11,13 +11,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import com.beaconhackathon.slalom.beaconandeggs.Models.Items;
 import com.beaconhackathon.slalom.beaconandeggs.Models.Recipe;
 
 import java.io.InputStream;
+import java.lang.reflect.Array;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,8 +37,11 @@ public class RecipeListAdapter extends BaseExpandableListAdapter {
     private Activity mContext;
     private LayoutInflater mInflater;
     private int mLayoutResourceId;
+
     public ArrayList<String> groupElements;
     public ArrayList<HashMap<String,String>> childElements;
+    public ArrayList<ArrayList<String>> ingredientLists;
+
 
     public RecipeListAdapter(Activity context, int layoutResourceId, ArrayList<Recipe> recipes) {
         super();
@@ -42,6 +50,7 @@ public class RecipeListAdapter extends BaseExpandableListAdapter {
         this.mLayoutResourceId = layoutResourceId;
         this.childElements = new ArrayList<HashMap<String, String>>();
         this.groupElements = new ArrayList<String>();
+        this.ingredientLists = new ArrayList<ArrayList<String>>();
         for(Recipe recipe: recipes){
             add(recipe);
         }
@@ -49,9 +58,10 @@ public class RecipeListAdapter extends BaseExpandableListAdapter {
     }
 
     public void add(Recipe recipe) {
-        this.groupElements.add(recipe.name);
-        this.childElements.add(groupElements.indexOf(recipe.name), getChildMapFromRecipe(recipe));
-        this.notifyDataSetChanged();
+        groupElements.add(recipe.name);
+        childElements.add(groupElements.indexOf(recipe.name), getChildMapFromRecipe(recipe));
+        ingredientLists.add(groupElements.indexOf(recipe.name),recipe.items);
+        notifyDataSetChanged();
     }
 
     public void remove(Recipe recipe) {
@@ -59,6 +69,8 @@ public class RecipeListAdapter extends BaseExpandableListAdapter {
         {
             groupElements.remove(groupElements.indexOf(recipe.name));
             childElements.remove(groupElements.indexOf(recipe.name));
+            ingredientLists.add(groupElements.indexOf(recipe.name), recipe.items);
+
         }
         this.notifyDataSetChanged();
     }
@@ -67,12 +79,12 @@ public class RecipeListAdapter extends BaseExpandableListAdapter {
     {
         groupElements.clear();
         childElements.clear();
+        ingredientLists.clear();
         this.notifyDataSetChanged();
     }
 
     private HashMap<String,String> getChildMapFromRecipe(Recipe recipe){
         HashMap<String,String> childMap = new HashMap<>();
-        //TODO create item list from ingredients that can be added to grocery cart
         //ArrayList<String> recipeAttributes = new ArrayList<String>();
         childMap.put("imageURL", recipe.imageURL);
         childMap.put("totalMinutes",""+recipe.totalMinutes);
@@ -122,6 +134,22 @@ public class RecipeListAdapter extends BaseExpandableListAdapter {
             }
         });
         ((RatingBar) convertView.findViewById(R.id.recipeListRowRating)).setRating((float) Double.parseDouble(childMap.get("rating")));
+
+        LinearLayout recipeIngredientListView = (LinearLayout) convertView.findViewById(R.id.recipeIngredientListView);
+        recipeIngredientListView.removeAllViewsInLayout();
+        LayoutInflater inflater=mContext.getLayoutInflater();
+        for(String ingredient:ingredientLists.get(groupPosition))
+        {
+
+            View rowView=inflater.inflate(R.layout.recipe_ingredient_list_item, (ViewGroup)convertView.findViewById(R.id.recipeIngredientListView),false);
+
+            TextView txtTitle = (TextView) rowView.findViewById(R.id.recipe_ingredient_list_row_text);
+
+            ImageButton imageButton = (ImageButton) rowView.findViewById(R.id.remove_ingredient_row);
+
+            txtTitle.setText(ingredient);
+            recipeIngredientListView.addView(rowView,ingredientLists.indexOf(ingredient));
+        }
 
     return convertView;
     }

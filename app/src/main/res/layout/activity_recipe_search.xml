@@ -9,7 +9,7 @@ tools:context="com.beaconhackathon.slalom.beaconandeggs.RecipeSearchActivity">
 
     <SearchView
         android:layout_width="fill_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:id="@+id/recipeSearchView"
         android:gravity="left"
         android:layout_gravity="top"
@@ -17,16 +17,24 @@ tools:context="com.beaconhackathon.slalom.beaconandeggs.RecipeSearchActivity">
 
     <ListView
     android:layout_width="fill_parent"
-    android:layout_height="0dp"
+    android:layout_height="wrap_content"
     android:id="@+id/ingredientListView"
     android:layout_weight=".3"
         android:layout_gravity="top" />
 
     <ExpandableListView
         android:layout_width="fill_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:id="@+id/recipeSearchListView"
         android:layout_weight=".6" />
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="done"
+        android:id="@+id/doneButton"
+        android:clickable="true"
+        android:onClick="onClickDone"
+        android:layout_gravity="bottom|right" />
 
 </LinearLayout>
