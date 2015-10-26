@@ -246,17 +246,22 @@ public class BeaconAndEggs extends Activity {
         LinearLayout layout = new LinearLayout(this);
         dialog.setTitle("Available Coupons");
 
+        layout.setMinimumHeight(400);
+        layout.setMinimumWidth(200);
+
         TextView textView = new TextView(this);
-//        BeaconApplication app = (BeaconApplication) getApplication();
+        textView.setPadding(20,20,20,20);
+
+        BeaconApplication app = (BeaconApplication) getApplication();
 
         String coupons = "";
-//        if (!app.notifications.isEmpty()) {
-//            for (String coupon : app.notifications) {
-//                coupons = coupons + coupon + "/n";
-//            }
-//        } else {
-//            coupons = "There are currently no coupons available.";
-//        }
+        if (!app.notifications.isEmpty()) {
+            for (String coupon : app.notifications) {
+                coupons = coupons + coupon + "/n";
+            }
+        } else {
+            coupons = "There are currently no coupons available.";
+        }
 
         textView.setText(coupons);
         layout.addView(textView);
