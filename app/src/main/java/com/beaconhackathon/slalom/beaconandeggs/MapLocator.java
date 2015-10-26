@@ -2,26 +2,28 @@ package com.beaconhackathon.slalom.beaconandeggs;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.RemoteException;
+import android.support.v4.content.LocalBroadcastManager;
+import android.text.Html;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.ScrollView;
+import android.widget.TextView;
 
 import com.beaconhackathon.slalom.beaconandeggs.Models.Category;
-import com.beaconhackathon.slalom.beaconandeggs.Models.GroceryCart;
 import com.beaconhackathon.slalom.beaconandeggs.Models.Item;
 import com.beaconhackathon.slalom.beaconandeggs.Models.Items;
-import com.beaconhackathon.slalom.beaconandeggs.Models.Notifications;
 import com.beaconhackathon.slalom.beaconandeggs.Models.Store;
 
 import java.util.ArrayList;
@@ -49,7 +51,10 @@ public class MapLocator extends Activity {
 
     private List<Category> selectedCategories;
 
+    private MapListViewAdapter mListViewAdapter;
     private ListView groceryListView;
+
+    private Category selectedCategory;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,18 +104,28 @@ public class MapLocator extends Activity {
                     // distance in meters
                     double distance = Utils.computeAccuracy(nearestBeacon);
 
-                    //In general, the greater the distance between the device and the beacon,
-                    // the lesser the strength of the received signal.
+                    if (selectedCategory != null && selectedCategory.beaconId == nearestBeacon.getMinor()) {
+                        // just update the meters and return
+                        updateText((int)distance);
+                        return;
+                    }
 
-                    // now we have the closest beacon, highlight on map
-                    // mark as visited and repeat
+                    if (selectedCategory != null && selectedCategory.beaconId != nearestBeacon.getMinor()) {
+                        // return, or update map & change the selected category
+                        return;
+                    }
+
                 }
             });
         }
 
+        // register the message handler
+        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver,
+                new IntentFilter("ListCompleted"));
+
         // set up List view
         groceryListView = (ListView) findViewById(R.id.listView2);
-        MapListViewAdapter mListViewAdapter = new MapListViewAdapter(this, groceryCart.items);
+        mListViewAdapter = new MapListViewAdapter(this, groceryCart.items);
         groceryListView.setAdapter(mListViewAdapter);
         mListViewAdapter.setMode(Attributes.Mode.Single);
 
@@ -121,17 +136,16 @@ public class MapLocator extends Activity {
                         position - groceryListView.getFirstVisiblePosition()))).open(true);
             }
         });
-        groceryListView.setOnScrollListener(new AbsListView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState) {
-                Log.e("ListView", "onScrollStateChanged");
-            }
 
+        // setting the scroll view to the top of the map view
+        final ScrollView sv = (ScrollView) findViewById(R.id.scrollview);
+        Handler h = new Handler();
+        h.postDelayed(new Runnable() {
             @Override
-            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-
+            public void run() {
+                sv.scrollTo(0, 0);
             }
-        });
+        }, 250); // 250 ms delay
     }
 
     @Override
@@ -162,6 +176,38 @@ public class MapLocator extends Activity {
         }
         super.onPause();
     }
+
+    @Override
+    protected void onDestroy() {
+        // Unregister since the activity is about to be closed.
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
+        super.onDestroy();
+    }
+
+    private void updateText(int meters) {
+        TextView text = (TextView) findViewById(R.id.textView2);
+        text.setText(Html.fromHtml(selectedCategory.name + " <b>" + meters + "m</b> away"));
+    }
+
+    /**
+     * Listen for a the list view items to be marked as completed
+     */
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // either move to next category or move to done screen
+            if (selectedCategory == null)
+                return;
+
+            selectedCategories.remove(selectedCategory);
+            selectedCategory = null;
+
+            if (selectedCategories.isEmpty()) {
+                // TODO go to done screen
+            }
+
+        }
+    };
 
     /**
      * Returns the categories of the items in the listview
@@ -204,6 +250,11 @@ public class MapLocator extends Activity {
                     if (cat.beaconId == beacon.getMinor()
                             && !cat.ItemsChecked()) {
                         nearestBeacon = beacon;
+
+                        if (selectedCategory == null) {
+                            selectedCategory = cat;
+                            mListViewAdapter.updateItemList(selectedCategory.items);
+                        }
                         break BEACONLOOP;
                     }
                 }

@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.SearchView;
 import com.beaconhackathon.slalom.beaconandeggs.Models.Categories;
 import com.beaconhackathon.slalom.beaconandeggs.Models.Category;
@@ -24,8 +25,6 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 public class ItemSearch extends ListActivity {
 
@@ -71,27 +70,27 @@ public class ItemSearch extends ListActivity {
     }
 
     public void returnAddedItem(View view) {
-        int position = getListView().getPositionForView((LinearLayout) view.getParent());
+        int position = getListView().getPositionForView((RelativeLayout) view.getParent());
         Item item = (Item)adapter.getItem(position);
         Intent myintent = new Intent(ItemSearch.this, BeaconAndEggs.class).putExtra("item", item);
         startActivity(myintent);
     }
 
-    private void getItems() {
-        Writer writer = new StringWriter();
-        char[] buffer = new char[1024];
-        try (InputStream is = getResources().openRawResource(R.raw.data)) {
-            Reader reader = new BufferedReader(new InputStreamReader(is));
-            int n;
-            while ((n = reader.read(buffer)) != -1) {
-                writer.write(buffer, 0, n);
-            }
-        } catch (IOException e) {
-            Log.e("Error", e.getMessage());
-        }
+    public void subtractNumber(View view) {
+        int position = getListView().getPositionForView((RelativeLayout) view.getParent());
+        Item item = (Item)adapter.getItem(position);
+        item.quantity--;
+    }
 
-        String jsonString = writer.toString();
-        Categories categories = convertToJson(jsonString);
+    public void addNumber(View view) {
+        int position = getListView().getPositionForView((RelativeLayout) view.getParent());
+        Item item = (Item)adapter.getItem(position);
+        item.quantity++;
+    }
+
+    private void getItems() {
+        String jsonString = JsonHelper.getJsonString(context);
+        Categories categories = JsonHelper.convertToJson(jsonString);
         setInitialItems(categories);
     }
 
@@ -100,15 +99,6 @@ public class ItemSearch extends ListActivity {
         for (Category category: categories.categories) {
             itemList.addAll(category.items);
         }
-    }
-
-    private Categories convertToJson(String jsonString) {
-        GsonBuilder builder = new GsonBuilder();
-        Gson gson = builder.create();
-        return gson.fromJson(
-                jsonString,
-                Categories.class
-        );
     }
 
 
