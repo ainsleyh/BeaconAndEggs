@@ -155,7 +155,7 @@ public class RecipeSearch extends Activity {
 
         SearchView searchView = (SearchView) findViewById(R.id.recipeSearchView);
         try {
-            recipeSearchUrl+="q="+ URLEncoder.encode(searchView.getQuery().toString(), "UTF-8");
+            recipeSearchUrl+="q="+ URLEncoder.encode(searchView.getQuery().toString(), "UTF-8")+"&requirePictures=true";
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -178,7 +178,6 @@ public class RecipeSearch extends Activity {
                     Recipe recipeResult = new Recipe(currentRecipe);
                     mRecipeListAdapter.add(recipeResult);
                 }
-//                mRecipeListAdapter.notifyDataSetChanged();
             }
         } catch (JSONException e) {
             e.printStackTrace();
