@@ -2,13 +2,6 @@
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent" android:orientation="vertical" tools:context=".BeaconAndEggs">
 
-    <!--android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin"-->
-
-
-
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="184dp"
@@ -26,19 +19,18 @@
     </ListView>
 
     <ImageButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text=" "
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:id="@+id/doneButton"
         android:background="@drawable/map_button"
         android:clickable="true"
         android:onClick="onClickDone"
-        android:layout_alignParentBottom="true"
-        android:layout_toStartOf="@+id/addButton" />
+        android:layout_above="@+id/addButton"
+        android:layout_toEndOf="@+id/button2" />
 
     <ImageButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:id="@+id/addButton"
         android:background="@drawable/add_item_button"
         android:clickable="true"
@@ -47,13 +39,32 @@
         android:layout_alignEnd="@+id/groceryListView" />
 
     <Button
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:background="@drawable/recipe_button"
+        android:id="@+id/button2"
+        android:enabled="true"
+        android:onClick="onClickShowRecipeSearch"
+        android:layout_alignBottom="@+id/groceryListView"
+        android:layout_toStartOf="@+id/addButton" />
+
+    <ImageButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Recipe"
-        android:id="@+id/button2"
+        android:id="@+id/imageView3"
+        android:background="@drawable/alert_icon"
+        android:layout_marginTop="49dp"
         android:layout_alignParentTop="true"
-        android:layout_alignEnd="@+id/textView"
-        android:enabled="true"
-        android:onClick="onClickShowRecipeSearch" />
+        android:layout_toEndOf="@+id/button2"
+        android:clickable="true"
+        android:onClick="onClickNotifications" />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/purchased_icon"
+        android:id="@+id/imageButton2"
+        android:layout_alignTop="@+id/imageView3"
+        android:layout_alignStart="@+id/button2" />
 
 </RelativeLayout>

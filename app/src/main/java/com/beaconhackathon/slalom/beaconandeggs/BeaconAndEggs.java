@@ -1,6 +1,7 @@
 package com.beaconhackathon.slalom.beaconandeggs;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,11 +10,15 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.AbsListView;
+import android.widget.PopupWindow;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.*;
@@ -36,8 +41,6 @@ public class BeaconAndEggs extends Activity {
     private GroceryCart groceryCart;
 
     private Store selectedStore;
-
-    private Notifications notifications;
 
 
     @Override
@@ -70,7 +73,6 @@ public class BeaconAndEggs extends Activity {
         checkToAddItem();
 
         final ListView groceryListView = (ListView) findViewById(R.id.groceryListView);
-        notifications = new Notifications();
 
         ListViewAdapter mListViewAdapter = new ListViewAdapter(this, groceryCart);
 
@@ -234,6 +236,36 @@ public class BeaconAndEggs extends Activity {
     }
 
     /**
+     * Called when the Notification button is Clicked
+     *
+     * @param view the Button
+     */
+    public void onClickNotifications(View view) {
+        final Dialog dialog = new Dialog(this);
+
+        LinearLayout layout = new LinearLayout(this);
+        dialog.setTitle("Available Coupons");
+
+        TextView textView = new TextView(this);
+        BeaconApplication app = (BeaconApplication) getApplication();
+
+        String coupons = "";
+        if (!app.notifications.isEmpty()) {
+            for (String coupon : app.notifications) {
+                coupons = coupons + coupon + "/n";
+            }
+        } else {
+            coupons = "There are currently no coupons available.";
+        }
+
+        textView.setText(coupons);
+        layout.addView(textView);
+
+        dialog.setContentView(layout);
+        dialog.show();
+    }
+
+    /**
      * Called when the Done button is Click
      *
      * @param view the Button
@@ -247,7 +279,6 @@ public class BeaconAndEggs extends Activity {
         items.items = this.groceryCart.items;
         intent.putExtra("groceryCart", items);
         intent.putExtra("store", this.selectedStore);
-        intent.putExtra("notifications", this.notifications);
         startActivity(intent);
     }
 
