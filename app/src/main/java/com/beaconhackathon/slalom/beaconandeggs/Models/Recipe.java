@@ -23,13 +23,10 @@ public class Recipe {
             this.name = recipeJSON.getString("recipeName");
 //            this.id //this field may not be used
 
-            List<Item> ingredients = new LinkedList<Item>();
+            ArrayList<String> ingredients = new ArrayList<String>();
             JSONArray ingredientsJSON = recipeJSON.getJSONArray("ingredients");
             for (int i = 0; i < ingredientsJSON.length(); i++) {
-                //TODO constructor for Item that populates all fields
-                Item newItem = new Item();
-                newItem.name = ingredientsJSON.getString(i);
-                ingredients.add(newItem);
+                ingredients.add(ingredientsJSON.getString(i));
             }
             this.items = ingredients;
 
@@ -87,7 +84,7 @@ public class Recipe {
     /**
      * The items needed in the recipe
      */
-    public List<Item> items;
+    public ArrayList<String> items;
 
     /**
      * The directions to complete the recipe

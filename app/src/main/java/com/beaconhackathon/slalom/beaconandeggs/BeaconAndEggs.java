@@ -69,8 +69,8 @@ public class BeaconAndEggs extends Activity {
                         "IngredientName"
                 )
         );
-        // See if we need to add an item from extras.
-        checkToAddItem();
+        // See if we need to add item(s) from extras.
+        checkToAddItems();
 
         final ListView groceryListView = (ListView) findViewById(R.id.groceryListView);
 
@@ -247,16 +247,16 @@ public class BeaconAndEggs extends Activity {
         dialog.setTitle("Available Coupons");
 
         TextView textView = new TextView(this);
-        BeaconApplication app = (BeaconApplication) getApplication();
+//        BeaconApplication app = (BeaconApplication) getApplication();
 
         String coupons = "";
-        if (!app.notifications.isEmpty()) {
-            for (String coupon : app.notifications) {
-                coupons = coupons + coupon + "/n";
-            }
-        } else {
-            coupons = "There are currently no coupons available.";
-        }
+//        if (!app.notifications.isEmpty()) {
+//            for (String coupon : app.notifications) {
+//                coupons = coupons + coupon + "/n";
+//            }
+//        } else {
+//            coupons = "There are currently no coupons available.";
+//        }
 
         textView.setText(coupons);
         layout.addView(textView);
@@ -298,16 +298,39 @@ public class BeaconAndEggs extends Activity {
 
     }
 
+
+    //enable adding multiple items
+    private void checkToAddItems() {
+        //See if the new items are being added to the list
+        Bundle extras = getIntent().getExtras();
+        checkToAddItem();
+        if (extras != null) {
+            Items itemsToAdd = (Items)extras.getSerializable("itemsToAdd");
+            for(Item item : itemsToAdd.items) {
+                if (item != null) {
+                    if (!groceryCart.addItemToCart(item)) {
+                        Toast.makeText(
+                                getApplicationContext(),
+                                item.name +
+                                        " already exists in your list!",
+                                Toast.LENGTH_SHORT
+                        ).show();
+                    }
+                }
+            }
+        }
+    }
+
     private void checkToAddItem() {
         //See if the new items are being added to the list
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
-            Item itemToAdd = (Item) extras.get("item");
-            if (itemToAdd != null) {
-                if (!groceryCart.addItemToCart(itemToAdd)) {
+            Item item = (Item) extras.get("item");
+            if (item != null) {
+                if (!groceryCart.addItemToCart(item)) {
                     Toast.makeText(
                             getApplicationContext(),
-                            itemToAdd.name +
+                            item.name +
                                     " already exists in your list!",
                             Toast.LENGTH_SHORT
                     ).show();
