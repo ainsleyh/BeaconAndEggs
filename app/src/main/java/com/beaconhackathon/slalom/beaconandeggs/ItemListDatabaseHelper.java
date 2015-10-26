@@ -6,14 +6,14 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.Cursor;
 
-import java.io.File;
+import java.io.Serializable;
 
 /**
  * Created by httpnick on 10/8/15.
  * DB helper to be used within the application
  * to store the user's persistent grocery list.
  */
-public class ItemListDatabaseHelper extends SQLiteOpenHelper {
+public class ItemListDatabaseHelper extends SQLiteOpenHelper implements Serializable {
 
     private String DB_NAME;
     private String ITEM_NAME_COLUMN;
@@ -34,10 +34,6 @@ public class ItemListDatabaseHelper extends SQLiteOpenHelper {
      */
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-
-        //if (sqLiteDatabase.con != null)
-        //    return;
-
         sqLiteDatabase.execSQL(
                 "create table if not exists" +
                         " " + DB_NAME + "(" +
@@ -62,7 +58,8 @@ public class ItemListDatabaseHelper extends SQLiteOpenHelper {
         ContentValues insertValues = new ContentValues();
         insertValues.put(ITEM_NAME_COLUMN, itemName);
 
-        return db.insert(DB_NAME,
+        return db.insert(
+                DB_NAME,
                 null,
                 insertValues
         );
@@ -79,7 +76,7 @@ public class ItemListDatabaseHelper extends SQLiteOpenHelper {
     /**
      * query all items in the DB.
      * @param db reference to which db to query.
-     * @return
+     * @return all items in db.
      */
     public Cursor getAllItems(SQLiteDatabase db) {
 
@@ -112,8 +109,16 @@ public class ItemListDatabaseHelper extends SQLiteOpenHelper {
      */
     public boolean dbContainsItem(SQLiteDatabase db, String itemName) {
 
-        Cursor resultCount = db.query(DB_NAME,new String[]{ITEM_NAME_COLUMN},ITEM_NAME_COLUMN+" = ?",new String[]{itemName},"","","");
-        return resultCount.getCount() > 0;
+        Cursor resultCount = db.query(
+                DB_NAME,
+                new String[]{ITEM_NAME_COLUMN},
+                ITEM_NAME_COLUMN + " = ?",
+                new String[]{itemName},
+                "","",""
+        );
+        int count = resultCount.getCount();
+        resultCount.close();
+        return count > 0;
     }
 
 

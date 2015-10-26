@@ -16,6 +16,7 @@ import com.daimajia.swipe.SwipeLayout;
 
 /**
  * Created by httpnick on 10/15/15.
+ * List view adapter to display main page grocery list.
  */
 public class ListViewAdapter extends BaseSwipeAdapter {
     private Context mContext;
@@ -32,9 +33,9 @@ public class ListViewAdapter extends BaseSwipeAdapter {
     }
 
     @Override
-    public View generateView(int position, ViewGroup parent) {
-        View v = LayoutInflater.from(mContext).inflate(R.layout.listview_item, null);
-        SwipeLayout swipeLayout = (SwipeLayout)v.findViewById(getSwipeLayoutResourceId(position));
+    public View generateView(final int position, final ViewGroup parent) {
+        final View v = LayoutInflater.from(mContext).inflate(R.layout.listview_item, null);
+        final SwipeLayout swipeLayout = (SwipeLayout)v.findViewById(getSwipeLayoutResourceId(position));
         swipeLayout.addSwipeListener(new SimpleSwipeListener() {
             @Override
             public void onOpen(SwipeLayout layout) {
@@ -50,7 +51,7 @@ public class ListViewAdapter extends BaseSwipeAdapter {
             public void onDoubleClick(SwipeLayout layout, boolean surface) {
                 Toast.makeText(
                         mContext,
-                        "DoubleClick",
+                        "Double Click",
                         Toast.LENGTH_SHORT)
                         .show();
             }
@@ -60,9 +61,16 @@ public class ListViewAdapter extends BaseSwipeAdapter {
             public void onClick(View view) {
                 Toast.makeText(
                         mContext,
-                        "click delete",
-                        Toast.LENGTH_SHORT)
-                        .show();
+                        "Removed " +
+                        _gc.getItemByIndex(
+                                position
+                        ).name,
+                        Toast.LENGTH_SHORT
+                ).show();
+                removeShownLayouts(swipeLayout);
+                _gc.removeAtIndex(position);
+                notifyDataSetChanged();
+                closeAllItems();
             }
         });
         return v;
@@ -71,17 +79,17 @@ public class ListViewAdapter extends BaseSwipeAdapter {
     @Override
     public void fillValues(int position, View convertView) {
         TextView t = (TextView)convertView.findViewById(R.id.text_data);
-        t.setText(_gc.items.get(position).name);
+        t.setText(_gc.getItemByIndex(position).name);
     }
 
     @Override
     public int getCount() {
-        return _gc.items.size();
+        return _gc.getItemListLength();
     }
 
     @Override
     public Object getItem(int position) {
-        return null;
+        return _gc.getItemByIndex(position);
     }
 
     @Override

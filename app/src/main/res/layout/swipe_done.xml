@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.daimajia.swipe.SwipeLayout
+    xmlns:swipe="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/swipeDone"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    swipe:leftEdgeSwipeOffset="0dp"
+    swipe:rightEdgeSwipeOffset="0dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:background="#00eab5"
+        android:gravity="center"
+        android:tag="Bottom3"
+        android:weightSum="10">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="5"
+            android:text="Done!"
+            android:fontFamily="sans-serif-light"
+            android:textColor="#ffffff"
+            android:textSize="20sp" />
+
+        <ImageView
+            android:id="@+id/checked"
+            android:layout_width="20.5dp"
+            android:layout_height="20.5dp"
+            android:layout_weight="1"
+            android:src="@drawable/check" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#00bcd4"
+        android:padding="10dp">
+
+        <TextView
+            android:id="@+id/text_data"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fontFamily="sans-serif-light"
+            android:background="#00bcd4"
+            android:textColor="#ffffff"
+            android:textSize="20sp"
+            android:tag="Hover"/>
+    </LinearLayout>
+</com.daimajia.swipe.SwipeLayout>

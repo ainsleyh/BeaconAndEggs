@@ -1,36 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:id="@+id/scrollview"
+    android:layout_height="wrap_content">
+
+<LinearLayout
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:weightSum="1">
 
+
     <ImageView
         android:layout_width="match_parent"
-        android:layout_height="400dp"
-        android:id="@+id/imageView"
-        android:background="@drawable/floorplan_2_beacons"
+        android:layout_height="76.5dp"
+        android:id="@+id/imageView2"
+        android:background="@drawable/map_locator_header"
         android:scaleType="fitXY"
         android:layout_gravity="center_vertical"
         />
 
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="361dp"
+        android:id="@+id/imageView"
+        android:background="@drawable/floorplan_2_beacons"
+        android:scaleType="fitXY" />
+
     <TextView
-        android:layout_width="331dp"
-        android:layout_height="wrap_content"
-        android:text="The most efficient route has been calculated"
-        android:id="@+id/textView2"
-        android:layout_gravity="center_horizontal"
-        android:layout_weight="0.74" />
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:textSize="25sp"
+        android:text="Frozen Foods 20ft Away"
+        android:background="#ffffff"
+        android:textColor="#00bcd4"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:id="@+id/textView2" />
 
-    <Button
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="144dp"
-        android:layout_height="wrap_content"
-        android:text="Begin Route"
-        android:id="@+id/button"
-        android:layout_gravity="center_horizontal"
-        android:background="#6495ED"
-        android:textColor="#ffffff"
-        android:clickable="true"
-        android:onClick="onClickBegin" />
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:id="@+id/listView2"
+        android:layout_below="@+id/textView2"
+        android:layout_gravity="center_horizontal" />
+    </LinearLayout>
 
-</LinearLayout>
+</ScrollView>

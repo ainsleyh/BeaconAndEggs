@@ -21,7 +21,6 @@
         android:fontFamily="sans-serif"
         android:text="Select Your Store "
         android:background="#ff9800"
-        android:textStyle="bold"
         android:textColor="#ffffff"
         android:id="@+id/textView3"
         android:layout_weight="0.09" />
