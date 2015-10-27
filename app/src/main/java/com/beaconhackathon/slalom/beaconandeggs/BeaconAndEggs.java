@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -200,6 +201,7 @@ public class BeaconAndEggs extends Activity {
                 {
                     Item item = new Item();
                     item.name = items.getJSONObject(x).getString("name");
+                    item.categoryID = UUID.fromString(items.getJSONObject(x).getString("categoryId"));
                     item.id = UUID.fromString(items.getJSONObject(x).getString("id"));
                     item.nutritionFacts = items.getJSONObject(x).getString("nutritionFacts");
                     item.state = State.Available;
@@ -252,13 +254,13 @@ public class BeaconAndEggs extends Activity {
         String coupons = "";
         if (!app.notifications.isEmpty()) {
             for (String coupon : app.notifications) {
-                coupons = coupons + coupon + "/n";
+                coupons = coupons + coupon + "\n";
             }
         } else {
             coupons = "There are currently no coupons available.";
         }
 
-        notificationDialogTextView.setText(coupons);
+        notificationDialogTextView.setText(Html.fromHtml(coupons));
         notificationDialogTextView.setVisibility(View.VISIBLE);
 
         ViewGroup parent = (ViewGroup)notificationDialogTextView.getParent();
@@ -289,7 +291,17 @@ public class BeaconAndEggs extends Activity {
         Intent intent = new Intent(BeaconAndEggs.this, MapLocator.class);
 
         Items items = new Items();
-        items.items = this.groceryCart.items;
+
+        for (Item item : this.groceryCart.items) {
+            OUTERLOOP: for (Category cat : this.selectedStore.availableCategories) {
+                for (Item categoryItem : cat.items) {
+                    if (categoryItem.name.toUpperCase().equals(item.name.toUpperCase()) && !items.items.contains(categoryItem)) {
+                        items.items.add(categoryItem);
+                        break OUTERLOOP;
+                    }
+                }
+            }
+        }
         intent.putExtra("groceryCart", items);
         intent.putExtra("store", this.selectedStore);
         startActivity(intent);
@@ -319,6 +331,8 @@ public class BeaconAndEggs extends Activity {
         checkToAddItem();
         if (extras != null) {
             Items itemsToAdd = (Items)extras.getSerializable("itemsToAdd");
+            if (itemsToAdd == null || itemsToAdd.items == null)
+                return;
             for(Item item : itemsToAdd.items) {
                 if (item != null) {
                     if (!groceryCart.addItemToCart(item)) {
@@ -341,12 +355,12 @@ public class BeaconAndEggs extends Activity {
             Item item = (Item) extras.get("item");
             if (item != null) {
                 if (!groceryCart.addItemToCart(item)) {
-                    Toast.makeText(
+                    /*Toast.makeText(
                             getApplicationContext(),
                             item.name +
                                     " already exists in your list!",
                             Toast.LENGTH_SHORT
-                    ).show();
+                    ).show();*/
                 }
             }
         }

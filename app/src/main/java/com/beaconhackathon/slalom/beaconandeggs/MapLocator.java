@@ -6,16 +6,15 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.RemoteException;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.Html;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ScrollView;
@@ -35,7 +34,6 @@ import com.estimote.sdk.Beacon;
 import com.estimote.sdk.BeaconManager;
 import com.estimote.sdk.Region;
 import com.estimote.sdk.Utils;
-import com.mapbox.mapboxsdk.views.MapView;
 
 /**
  * Created by ainsleyherndon on 10/9/15.
@@ -81,6 +79,11 @@ public class MapLocator extends Activity {
 
         final BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (bluetoothAdapter != null && bluetoothAdapter.isEnabled()) {
+
+            // clear text view
+            TextView text = (TextView) findViewById(R.id.textView2);
+            text.setText("calculating...");
+
             // emulator is not running so we instantiate the beaconmanager
             // set up ranging Beacon Manager
             rangingBeaconManager = new BeaconManager(this);
@@ -88,6 +91,9 @@ public class MapLocator extends Activity {
             rangingBeaconManager.setRangingListener(new BeaconManager.RangingListener() {
                 @Override
                 public void onBeaconsDiscovered(Region region, List<Beacon> list) {
+
+                    if (list.size() == 0)
+                        return;
 
                     Beacon nearestBeacon = getClosestBeacon(list);
 
@@ -132,8 +138,14 @@ public class MapLocator extends Activity {
         groceryListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                ((SwipeLayout) (groceryListView.getChildAt(
-                        position - groceryListView.getFirstVisiblePosition()))).open(true);
+                try {
+                    if (position < mListViewAdapter._filteredItems.size()) {
+                        ((SwipeLayout) (groceryListView.getChildAt(
+                                position - groceryListView.getFirstVisiblePosition()))).open(true);
+                    }
+                } catch(Exception ex) {
+
+                }
             }
         });
 
@@ -204,6 +216,10 @@ public class MapLocator extends Activity {
 
             if (selectedCategories.isEmpty()) {
                 // TODO go to done screen
+            } else {
+                // change color
+                TextView text = (TextView) findViewById(R.id.textView2);
+                text.setText("calculating...");
             }
 
         }
@@ -226,6 +242,9 @@ public class MapLocator extends Activity {
                     break;
                 }
             }
+
+            if (itemCategory == null)
+                continue;
 
             if (!selectedCategories.contains(itemCategory))
                 selectedCategories.add(itemCategory);

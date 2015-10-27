@@ -9,6 +9,9 @@ import java.util.List;
  */
 public class Items implements Serializable {
 
+    public Items() {
+        items = new ArrayList<>();
+    }
     /**
      * A list of grocery items
      */
