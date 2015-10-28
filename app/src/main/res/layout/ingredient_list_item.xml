@@ -2,10 +2,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal"
     android:id="@+id/ingredientListRow"
+    android:background="#52E3C1"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:padding="10dp"
-    android:textSize="16sp" >
+    android:layout_height="wrap_content">
 
     <TextView
         android:layout_width="0dp"
@@ -14,18 +13,18 @@
         android:id="@+id/ingredient_list_row_text"
         android:layout_gravity="left"
         android:layout_weight=".9"
+        android:textColor="@color/white"
         android:padding="10dp"
-        android:textSize="16sp"
+        android:textSize="14sp"
         android:gravity="left" />
 
     <ImageButton
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="fill_parent"
         android:id="@+id/remove_ingredient_row"
         android:layout_weight=".1"
         android:background="@drawable/trash"
         android:layout_gravity="right"
         android:onClick="onClickRemoveIngredient"
-        android:clickable="true"
-        android:backgroundTint="@color/dark_gray"/>
+        android:clickable="true"/>
 </LinearLayout>

@@ -293,9 +293,9 @@ public class BeaconAndEggs extends Activity {
     }
 
      /**
-     * Called when the Menu item for recipe search is clicked
+     * Called when the recipe icon is clicked
      *
-     * @param item recipe search menu item
+     * @param item recipe search view
      */
     public void onClickShowRecipeSearch(View item){
         Intent intent = new Intent(BeaconAndEggs.this, RecipeSearch.class);
