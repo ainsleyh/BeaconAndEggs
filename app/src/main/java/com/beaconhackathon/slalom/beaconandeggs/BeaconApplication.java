@@ -2,7 +2,10 @@ package com.beaconhackathon.slalom.beaconandeggs;
 
 import android.app.Application;
 import android.bluetooth.BluetoothAdapter;
+import android.content.Context;
 import android.os.RemoteException;
+import android.os.Vibrator;
+
 import com.estimote.sdk.Beacon;
 import com.estimote.sdk.BeaconManager;
 import com.estimote.sdk.Region;
@@ -39,6 +42,9 @@ public class BeaconApplication extends Application {
                 @Override
                 public void onEnteredRegion(Region region, List<Beacon> list) {
                     addNotification("Lettuce 20% off! Use Code: Healthly101 at counter");
+
+                    Vibrator v = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
+                    v.vibrate(100);
                 }
 
                 @Override

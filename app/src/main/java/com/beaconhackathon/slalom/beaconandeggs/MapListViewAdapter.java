@@ -26,7 +26,7 @@ public class MapListViewAdapter extends BaseSwipeAdapter {
     private Context mContext;
     private List<Item> _items;
 
-    private List<Item> _filteredItems;
+    public List<Item> _filteredItems;
 
     public MapListViewAdapter(Context mContext, List<Item> gc) {
         this.mContext = mContext;
@@ -41,9 +41,7 @@ public class MapListViewAdapter extends BaseSwipeAdapter {
     }
 
     @Override
-    public int getSwipeLayoutResourceId(int position) {
-        return R.id.swipeDone;
-    }
+    public int getSwipeLayoutResourceId(int position) { return R.id.swipeDone; }
 
     @Override
     public View generateView(final int position, final ViewGroup parent) {
@@ -54,6 +52,15 @@ public class MapListViewAdapter extends BaseSwipeAdapter {
             @Override
             public void onOpen(SwipeLayout layout) {
 
+                // sanity check
+                if (position >= _filteredItems.size()){
+                    _filteredItems.clear();
+                    notifyDataSetChanged();
+                    closeAllItems();
+                    sendCompleteNotification();
+                    return;
+                }
+
                 // mark as checked
                 Item selectedItem = _filteredItems.get(position);
                 selectedItem.state = State.Checked;
@@ -61,9 +68,7 @@ public class MapListViewAdapter extends BaseSwipeAdapter {
                 _filteredItems.remove(position);
 
                 if (_filteredItems.size() == 0) {
-                    // send notification of completed list to the map locator
-                    Intent intent = new Intent("ListCompleted");
-                    LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
+                    sendCompleteNotification();
                 }
 
                 notifyDataSetChanged();
@@ -84,6 +89,14 @@ public class MapListViewAdapter extends BaseSwipeAdapter {
         }
 
         notifyDataSetChanged();
+        closeAllItems();
+    }
+
+    // send notification of completed list to the map locator
+    private void sendCompleteNotification() {
+        // send notification of completed list to the map locator
+        Intent intent = new Intent("ListCompleted");
+        LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
     }
 
     @Override

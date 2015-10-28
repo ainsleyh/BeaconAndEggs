@@ -2,8 +2,10 @@ package com.beaconhackathon.slalom.beaconandeggs;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -17,7 +19,6 @@ import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.AbsListView;
-import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,7 +27,6 @@ import com.beaconhackathon.slalom.beaconandeggs.Models.Category;
 import com.beaconhackathon.slalom.beaconandeggs.Models.GroceryCart;
 import com.beaconhackathon.slalom.beaconandeggs.Models.Item;
 import com.beaconhackathon.slalom.beaconandeggs.Models.Items;
-import com.beaconhackathon.slalom.beaconandeggs.Models.Notifications;
 import com.beaconhackathon.slalom.beaconandeggs.Models.State;
 import com.beaconhackathon.slalom.beaconandeggs.Models.Store;
 import java.io.IOException;
@@ -42,6 +42,7 @@ public class BeaconAndEggs extends Activity {
 
     private Store selectedStore;
 
+    private TextView notificationDialogTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +57,8 @@ public class BeaconAndEggs extends Activity {
         );
 
         setContentView(R.layout.activity_beacon_and_eggs);
+
+        notificationDialogTextView = (TextView) findViewById(R.id.notification);
 
         groceryCart = new GroceryCart(
                 new ItemListDatabaseHelper(
@@ -198,6 +201,7 @@ public class BeaconAndEggs extends Activity {
                 {
                     Item item = new Item();
                     item.name = items.getJSONObject(x).getString("name");
+                    item.categoryID = UUID.fromString(items.getJSONObject(x).getString("categoryId"));
                     item.id = UUID.fromString(items.getJSONObject(x).getString("id"));
                     item.nutritionFacts = items.getJSONObject(x).getString("nutritionFacts");
                     item.state = State.Available;
@@ -244,29 +248,35 @@ public class BeaconAndEggs extends Activity {
         final Dialog dialog = new Dialog(this);
 
         LinearLayout layout = new LinearLayout(this);
-        dialog.setTitle("Available Coupons");
-
-        layout.setMinimumHeight(400);
-        layout.setMinimumWidth(200);
-
-        TextView textView = new TextView(this);
-        textView.setPadding(20,20,20,20);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
         BeaconApplication app = (BeaconApplication) getApplication();
-
         String coupons = "";
         if (!app.notifications.isEmpty()) {
             for (String coupon : app.notifications) {
-                coupons = coupons + coupon + "/n";
+                coupons = coupons + coupon + "\n";
             }
         } else {
             coupons = "There are currently no coupons available.";
         }
 
-        textView.setText(coupons);
-        layout.addView(textView);
+        notificationDialogTextView.setText(Html.fromHtml(coupons));
+        notificationDialogTextView.setVisibility(View.VISIBLE);
+
+        ViewGroup parent = (ViewGroup)notificationDialogTextView.getParent();
+        parent.removeView(notificationDialogTextView);
+
+        layout.addView(notificationDialogTextView);
 
         dialog.setContentView(layout);
+
+        dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                notificationDialogTextView.setVisibility(View.INVISIBLE);
+            }
+        });
+
         dialog.show();
     }
 
@@ -281,7 +291,17 @@ public class BeaconAndEggs extends Activity {
         Intent intent = new Intent(BeaconAndEggs.this, MapLocator.class);
 
         Items items = new Items();
-        items.items = this.groceryCart.items;
+
+        for (Item item : this.groceryCart.items) {
+            OUTERLOOP: for (Category cat : this.selectedStore.availableCategories) {
+                for (Item categoryItem : cat.items) {
+                    if (categoryItem.name.toUpperCase().equals(item.name.toUpperCase()) && !items.items.contains(categoryItem)) {
+                        items.items.add(categoryItem);
+                        break OUTERLOOP;
+                    }
+                }
+            }
+        }
         intent.putExtra("groceryCart", items);
         intent.putExtra("store", this.selectedStore);
         startActivity(intent);
@@ -311,6 +331,8 @@ public class BeaconAndEggs extends Activity {
         checkToAddItem();
         if (extras != null) {
             Items itemsToAdd = (Items)extras.getSerializable("itemsToAdd");
+            if (itemsToAdd == null || itemsToAdd.items == null)
+                return;
             for(Item item : itemsToAdd.items) {
                 if (item != null) {
                     if (!groceryCart.addItemToCart(item)) {
@@ -333,12 +355,12 @@ public class BeaconAndEggs extends Activity {
             Item item = (Item) extras.get("item");
             if (item != null) {
                 if (!groceryCart.addItemToCart(item)) {
-                    Toast.makeText(
+                    /*Toast.makeText(
                             getApplicationContext(),
                             item.name +
                                     " already exists in your list!",
                             Toast.LENGTH_SHORT
-                    ).show();
+                    ).show();*/
                 }
             }
         }

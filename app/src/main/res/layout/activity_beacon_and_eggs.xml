@@ -67,4 +67,15 @@
         android:layout_alignTop="@+id/imageView3"
         android:layout_alignStart="@+id/button2" />
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#03a9f4"
+        android:textSize="20sp"
+        android:visibility="invisible"
+        android:padding="10dp"
+        android:fontFamily="sans-serif-light"
+        android:text="There are currently no coupons available."
+        android:id="@+id/notification" />
+
 </RelativeLayout>
