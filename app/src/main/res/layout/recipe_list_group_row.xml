@@ -2,7 +2,9 @@
     <TextView xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="recipeName"
-        android:padding="10dp"
-        android:textSize="16sp"
-        android:id="@+id/recipeListRowName" />
+        android:background="#FF5534"
+        android:textColor="@color/white"
+    android:textSize="18sp"
+        android:id="@+id/recipeListRowName"
+    android:padding="10dp"
+    android:paddingLeft="25dp" />

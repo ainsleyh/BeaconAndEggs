@@ -57,15 +57,10 @@ public class Recipe {
                 this.totalMinutes = recipeJSON.getInt("totalTimeInSeconds") / 60 + "min";
             }
             this.rating = recipeJSON.getDouble("rating");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-    public void setSourceDetails(JSONObject sourceJSON)
-    {
-        try {
-            this.sourceDisplayName = sourceJSON.getString("sourceDisplayName");
-            this.sourceURL = sourceJSON.getString("sourceRecipeUrl");
+
+            this.sourceDisplayName = recipeJSON.getString("sourceDisplayName");
+            this.sourceURL = "http://www.yummly.com"; //default for attribution until/if we implement recipe detail search
+
         } catch (JSONException e) {
             e.printStackTrace();
         }

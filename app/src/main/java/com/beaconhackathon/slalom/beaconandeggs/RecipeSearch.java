@@ -14,6 +14,7 @@ import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.os.AsyncTask;
+import android.widget.Toast;
 
 import com.beaconhackathon.slalom.beaconandeggs.Models.Item;
 import com.beaconhackathon.slalom.beaconandeggs.Models.Items;
@@ -119,27 +120,7 @@ public class RecipeSearch extends Activity {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        //call recipe search activity
-        //this functionality may be refactored from the menu
-        if (id==R.id.action_showGroceryCart){
-            onClickShowGroceryCart(item);
-            return true;
-        }
-
         return super.onOptionsItemSelected(item);
-    }
-
-    public void onClickShowGroceryCart (MenuItem item){
-        Intent intent = new Intent(this,BeaconAndEggs.class);
-        startActivity(intent);
-
     }
 
     public void onClickRemoveIngredient(View v)
@@ -149,14 +130,31 @@ public class RecipeSearch extends Activity {
         mIngredientListDB.removeItem(mIngredientListDB.getWritableDatabase(), (String) ingredientName);
         mIngredientListAdapter.remove(ingredientName);
         submitRecipeSearchQuery();
+        Toast.makeText(
+                getApplicationContext(),
+                "removed "+ingredientName+" from ingredient list",
+                Toast.LENGTH_SHORT
+        ).show();
     }
 
+
+    public boolean onClickSubmitSearch(View v)
+    {
+        SearchView searchView = (SearchView) findViewById(R.id.recipeSearchView);
+        submitRecipeSearchQuery();
+        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(searchView.getWindowToken(), 0);
+        return true;
+    }
+
+
     /**
-     * Called when the Done button is Click
+     * Called when the header button is Click
+     * Returns to main activity and adds requested ingredients to list
      *
      * @param view the Button
      */
-    public void onClickDone(View view) {
+    public void onClickHeader(View view) {
 
         // change view to MapLocator
         Intent intent = new Intent(RecipeSearch.this, BeaconAndEggs.class);
@@ -174,6 +172,12 @@ public class RecipeSearch extends Activity {
         Item itemToAdd = new Item();
         itemToAdd.name = (String) ((TextView)((View)view.getParent()).findViewById(R.id.recipe_ingredient_list_row_text)).getText();
         mItemsToAdd.items.add(itemToAdd);
+        Toast.makeText(
+                getApplicationContext(),
+                itemToAdd.name +
+                        " will be added your grocery list!",
+                Toast.LENGTH_SHORT
+        ).show();
     }
 
 
