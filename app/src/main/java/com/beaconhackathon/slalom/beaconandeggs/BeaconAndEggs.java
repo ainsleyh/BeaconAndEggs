@@ -129,7 +129,14 @@ public class BeaconAndEggs extends Activity {
                     Toast.makeText(
                             getApplicationContext(),
                             currItem.name +
-                                    " already exists in your recipe list!",
+                                    " already exists in your ingredient list!",
+                            Toast.LENGTH_SHORT
+                    ).show();
+                }else{
+                    Toast.makeText(
+                            getApplicationContext(),
+                            currItem.name +
+                                    " has been added your ingredient list!",
                             Toast.LENGTH_SHORT
                     ).show();
                 }

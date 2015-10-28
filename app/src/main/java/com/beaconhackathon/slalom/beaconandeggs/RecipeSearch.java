@@ -14,6 +14,7 @@ import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.os.AsyncTask;
+import android.widget.Toast;
 
 import com.beaconhackathon.slalom.beaconandeggs.Models.Item;
 import com.beaconhackathon.slalom.beaconandeggs.Models.Items;
@@ -129,6 +130,11 @@ public class RecipeSearch extends Activity {
         mIngredientListDB.removeItem(mIngredientListDB.getWritableDatabase(), (String) ingredientName);
         mIngredientListAdapter.remove(ingredientName);
         submitRecipeSearchQuery();
+        Toast.makeText(
+                getApplicationContext(),
+                "removed "+ingredientName+" from ingredient list",
+                Toast.LENGTH_SHORT
+        ).show();
     }
 
 
@@ -166,6 +172,12 @@ public class RecipeSearch extends Activity {
         Item itemToAdd = new Item();
         itemToAdd.name = (String) ((TextView)((View)view.getParent()).findViewById(R.id.recipe_ingredient_list_row_text)).getText();
         mItemsToAdd.items.add(itemToAdd);
+        Toast.makeText(
+                getApplicationContext(),
+                itemToAdd.name +
+                        " will be added your grocery list!",
+                Toast.LENGTH_SHORT
+        ).show();
     }
 
 
