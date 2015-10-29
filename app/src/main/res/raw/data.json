@@ -10,6 +10,7 @@
           "name": "Milk",
           "id": "e7ac9e3e-5db3-4ee8-a373-e406c09db265",
           "categoryId": "3f5c201f-fe17-4172-b111-a793ea3e0337",
+          "categoryName": "Dairy",
           "nutritionFacts": "High in Calcium",
           "state": "Available",
           "recipes": [
@@ -20,6 +21,7 @@
           "name": "Cheese",
           "id": "93c36229-bfec-4a2c-babd-a335093c36b6",
           "categoryId": "3f5c201f-fe17-4172-b111-a793ea3e0337",
+          "categoryName": "Dairy",
           "nutritionFacts": "High in Calcium and Fat",
           "state": "Available",
           "recipes": [
@@ -38,6 +40,7 @@
           "name": "Bacon",
           "id": "c498bc45-9cb2-4933-b569-62f0ec683d1f",
           "categoryId": "d4b38ced-47e2-47fd-8ed2-760406167791",
+          "categoryName": "Meat",
           "nutritionFacts": "High in Fat and Sodium",
           "state": "Available",
           "recipes": [
@@ -48,6 +51,7 @@
           "name": "Sausage",
           "id": "89c6897a-188b-46c8-8876-29bee823f548",
           "categoryId": "d4b38ced-47e2-47fd-8ed2-760406167791",
+          "categoryName": "Meat",
           "nutritionFacts": "High in Fat and Sodium",
           "state": "Available",
           "recipes": [
@@ -66,6 +70,7 @@
           "name": "Carrot",
           "id": "d9adf365-0544-4965-9a26-f8da10c6ccd2",
           "categoryId": "9c37173c-bf4c-4749-882f-22d13f09e9b8",
+          "categoryName": "Produce",
           "nutritionFacts": "High in Vitamin A and Fiber",
           "state": "Available",
           "recipes": [
@@ -76,6 +81,7 @@
           "name": "Broccoli",
           "id": "38ae93b1-7b63-4e3b-9d7c-c75bec85713e",
           "categoryId": "9c37173c-bf4c-4749-882f-22d13f09e9b8",
+          "categoryName": "Produce",
           "nutritionFacts": "High in Vitamin A and Fiber",
           "state": "Available",
           "recipes": [
@@ -94,6 +100,7 @@
           "name": "Ice Cream",
           "id": "d96a8800-f70b-4a67-8687-1c57320cae04",
           "categoryId": "5d4d29d3-43d6-409c-ac12-7dffef8ec5d8",
+          "categoryName": "Frozen",
           "nutritionFacts": "High in Calcium, Sugar, and Fat",
           "state": "Available",
           "recipes": [

@@ -38,6 +38,18 @@ import com.daimajia.swipe.util.Attributes;
 
 public class BeaconAndEggs extends Activity {
 
+    public static final String itemDatabase = "UserItemList";
+
+    public static final String recipeItemDatabase = "Ingredients";
+
+    public static final String dbItemNameColumn = "ItemName";
+
+    public static final String dbItemCatColumn = "ItemCategory";
+
+    public static final String dbRecipeItemNameColumn = "IngredientName";
+
+    public static final String dbRecipeItemCatColumn = "IngredientCategory";
+
     private GroceryCart groceryCart;
 
     private Store selectedStore;
@@ -63,13 +75,15 @@ public class BeaconAndEggs extends Activity {
         groceryCart = new GroceryCart(
                 new ItemListDatabaseHelper(
                         getApplicationContext(),
-                        "UserItemList",
-                        "ItemName"
+                        itemDatabase,
+                        dbItemNameColumn,
+                        dbItemCatColumn
                 ),
                 new ItemListDatabaseHelper(
                         getApplicationContext(),
-                        "Ingredients",
-                        "IngredientName"
+                        recipeItemDatabase,
+                        dbRecipeItemNameColumn,
+                        dbRecipeItemCatColumn
                 )
         );
         // See if we need to add item(s) from extras.
@@ -208,7 +222,8 @@ public class BeaconAndEggs extends Activity {
                 {
                     Item item = new Item();
                     item.name = items.getJSONObject(x).getString("name");
-                    item.categoryID = UUID.fromString(items.getJSONObject(x).getString("categoryId"));
+                    item.categoryID = items.getJSONObject(x).getString("categoryId");
+                    item.categoryName = cat.name;
                     item.id = UUID.fromString(items.getJSONObject(x).getString("id"));
                     item.nutritionFacts = items.getJSONObject(x).getString("nutritionFacts");
                     item.state = State.Available;
