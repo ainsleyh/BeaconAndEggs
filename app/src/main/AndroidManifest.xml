@@ -38,6 +38,15 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".PurchaseItems"
+            android:label=" " >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
             android:name=".StoreSelection"
             android:label="Select Your Store" >
             <intent-filter>
