@@ -6,6 +6,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.Cursor;
 
+import com.beaconhackathon.slalom.beaconandeggs.Models.Item;
+
 import java.io.Serializable;
 
 /**
@@ -17,11 +19,14 @@ public class ItemListDatabaseHelper extends SQLiteOpenHelper implements Serializ
 
     private String DB_NAME;
     private String ITEM_NAME_COLUMN;
+    private String ITEM_CAT_COLUMN;
 
-    public ItemListDatabaseHelper(Context context, String dbName, String itemNameColumn) {
-        // arbitrary versioning!      V
+    public ItemListDatabaseHelper(Context context, String dbName,
+                                  String itemNameColumn, String itemCategoryColumn) {
+        // arbitrary versioning!     V
         super(context, dbName, null, 1);
         ITEM_NAME_COLUMN = itemNameColumn;
+        ITEM_CAT_COLUMN = itemCategoryColumn;
         DB_NAME = dbName;
 
         onCreate(this.getWritableDatabase());
@@ -39,7 +44,9 @@ public class ItemListDatabaseHelper extends SQLiteOpenHelper implements Serializ
                         " " + DB_NAME + "(" +
                         ITEM_NAME_COLUMN +
                         " varchar(100) " +
-                        "primary key)"
+                        "primary key, " +
+                        ITEM_CAT_COLUMN +
+                        " varchar(100))"
         );
     }
 
@@ -51,12 +58,18 @@ public class ItemListDatabaseHelper extends SQLiteOpenHelper implements Serializ
     /**
      * insert an item.
      * @param db db reference where table resides.
-     * @param itemName item to insert.
+     * @param item item to insert.
      * @return whether insert successfully happened.
      */
-    public long insertItem(SQLiteDatabase db, String itemName) {
+    public long insertItem(SQLiteDatabase db, Item item) {
         ContentValues insertValues = new ContentValues();
-        insertValues.put(ITEM_NAME_COLUMN, itemName);
+
+        insertValues.put(ITEM_NAME_COLUMN,
+                item.name
+        );
+        insertValues.put(ITEM_CAT_COLUMN,
+                item.categoryName
+        );
 
         return db.insert(
                 DB_NAME,

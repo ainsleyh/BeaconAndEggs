@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.beaconhackathon.slalom.beaconandeggs.Models.Item;
 import com.beaconhackathon.slalom.beaconandeggs.Models.Items;
 import com.beaconhackathon.slalom.beaconandeggs.Models.Recipe;
+import com.estimote.sdk.Beacon;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -51,7 +52,12 @@ public class RecipeSearch extends Activity {
         setContentView(R.layout.activity_recipe_search);
         super.onCreate(savedInstanceState);
 
-        mIngredientListDB = new ItemListDatabaseHelper(getApplicationContext(),"Ingredients","IngredientName");
+        mIngredientListDB = new ItemListDatabaseHelper(
+                getApplicationContext(),
+                BeaconAndEggs.recipeItemDatabase,
+                BeaconAndEggs.dbRecipeItemNameColumn,
+                BeaconAndEggs.dbRecipeItemCatColumn
+        );
 
         mItemsToAdd = new Items();
         mItemsToAdd.items = new ArrayList<>();
@@ -132,7 +138,7 @@ public class RecipeSearch extends Activity {
         submitRecipeSearchQuery();
         Toast.makeText(
                 getApplicationContext(),
-                "removed "+ingredientName+" from ingredient list",
+                "removed " + ingredientName + " from ingredient list",
                 Toast.LENGTH_SHORT
         ).show();
     }
