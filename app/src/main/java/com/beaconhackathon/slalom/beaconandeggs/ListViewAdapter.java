@@ -80,6 +80,11 @@ public class ListViewAdapter extends BaseSwipeAdapter {
     public void fillValues(int position, View convertView) {
         TextView t = (TextView)convertView.findViewById(R.id.text_data);
         t.setText(_gc.getItemByIndex(position).name);
+        TextView t2 = (TextView)convertView.findViewById(R.id.text_data2);
+        int quantity = _gc.getItemByIndex(position).quantity;
+        if (quantity <= 0)
+            quantity = 1;
+        t2.setText("x" + quantity);
     }
 
     @Override
