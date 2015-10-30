@@ -23,43 +23,44 @@ public class Recipe {
             this.name = recipeJSON.getString("recipeName");
 //            this.id //this field may not be used
 
-            List<Item> ingredients = new LinkedList<Item>();
+            ArrayList<String> ingredients = new ArrayList<String>();
             JSONArray ingredientsJSON = recipeJSON.getJSONArray("ingredients");
-            for(int i = 0; i<ingredientsJSON.length(); i++){
-                //TODO constructor for Item that populates all fields
-                Item newItem = new Item();
-                newItem.name = ingredientsJSON.getString(i);
-                ingredients.add(newItem);
+            for (int i = 0; i < ingredientsJSON.length(); i++) {
+                ingredients.add(ingredientsJSON.getString(i));
             }
             this.items = ingredients;
 
             this.flavors = new HashMap<>();
-            JSONObject flavorsJSON = recipeJSON.getJSONObject("flavors");
-            flavors.put("Spicy",flavorsJSON.getDouble("piquant"));
-            flavors.put("Savory",flavorsJSON.getDouble("meaty"));
-            flavors.put("Bitter",flavorsJSON.getDouble("bitter"));
-            flavors.put("Sweet",flavorsJSON.getDouble("sweet"));
-            flavors.put("Sour",flavorsJSON.getDouble("sour"));
-            flavors.put("Salty",flavorsJSON.getDouble("salty"));
 
+            if (recipeJSON.isNull("flavors")){
+                flavors.put("Spicy", 0.0);
+                flavors.put("Savory", 0.0);
+                flavors.put("Bitter", 0.0);
+                flavors.put("Sweet", 0.0);
+                flavors.put("Sour", 0.0);
+                flavors.put("Salty", 0.0);
+            }else{
+                JSONObject flavorsJSON = recipeJSON.getJSONObject("flavors");
+                flavors.put("Spicy", flavorsJSON.getDouble("piquant"));
+                flavors.put("Savory", flavorsJSON.getDouble("meaty"));
+                flavors.put("Bitter", flavorsJSON.getDouble("bitter"));
+                flavors.put("Sweet", flavorsJSON.getDouble("sweet"));
+                flavors.put("Sour", flavorsJSON.getDouble("sour"));
+                flavors.put("Salty", flavorsJSON.getDouble("salty"));
+            }
 
             this.imageURL = recipeJSON.getJSONArray("smallImageUrls").getString(0);
 
-            if(recipeJSON.getString("totalTimeInSeconds") != null) {
-                this.totalMinutes = recipeJSON.getInt("totalTimeInSeconds") / 60 + "min";
+            if(recipeJSON.isNull("totalTimeInSeconds")) {
+                this.totalMinutes = "--";
             } else {
-                        this.totalMinutes = "no time listed";
+                this.totalMinutes = recipeJSON.getInt("totalTimeInSeconds") / 60 + "min";
             }
             this.rating = recipeJSON.getDouble("rating");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-    public void setSourceDetails(JSONObject sourceJSON)
-    {
-        try {
-            this.sourceDisplayName = sourceJSON.getString("sourceDisplayName");
-            this.sourceURL = sourceJSON.getString("sourceRecipeUrl");
+
+            this.sourceDisplayName = recipeJSON.getString("sourceDisplayName");
+            this.sourceURL = "http://www.yummly.com"; //default for attribution until/if we implement recipe detail search
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -78,7 +79,7 @@ public class Recipe {
     /**
      * The items needed in the recipe
      */
-    public List<Item> items;
+    public ArrayList<String> items;
 
     /**
      * The directions to complete the recipe

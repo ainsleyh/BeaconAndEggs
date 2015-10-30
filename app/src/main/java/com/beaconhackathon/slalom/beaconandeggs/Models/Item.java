@@ -14,11 +14,12 @@ public class Item implements Serializable {
         this.state = State.Available;
     }
 
-    public Item(String name, UUID id, UUID categoryID) {
+    public Item(String name, UUID id, String categoryID, String categoryName) {
         this.state = State.Available;
         this.name = name;
         this.id = id;
         this.categoryID = categoryID;
+        this.categoryName = categoryName;
     }
 
     /**
@@ -34,7 +35,12 @@ public class Item implements Serializable {
     /**
      * The Items parent category
      */
-    public UUID categoryID;
+    public String categoryID;
+
+    /**
+     * The items cateogry name.
+     */
+    public String categoryName;
 
     /*
      * Quantity of the item in cart

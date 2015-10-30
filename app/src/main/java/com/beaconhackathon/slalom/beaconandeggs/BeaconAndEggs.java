@@ -1,19 +1,25 @@
 package com.beaconhackathon.slalom.beaconandeggs;
 
 import android.app.Activity;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.AbsListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.*;
@@ -21,7 +27,6 @@ import com.beaconhackathon.slalom.beaconandeggs.Models.Category;
 import com.beaconhackathon.slalom.beaconandeggs.Models.GroceryCart;
 import com.beaconhackathon.slalom.beaconandeggs.Models.Item;
 import com.beaconhackathon.slalom.beaconandeggs.Models.Items;
-import com.beaconhackathon.slalom.beaconandeggs.Models.Notifications;
 import com.beaconhackathon.slalom.beaconandeggs.Models.State;
 import com.beaconhackathon.slalom.beaconandeggs.Models.Store;
 import java.io.IOException;
@@ -33,12 +38,23 @@ import com.daimajia.swipe.util.Attributes;
 
 public class BeaconAndEggs extends Activity {
 
+    public static final String itemDatabase = "UserItemList";
+
+    public static final String recipeItemDatabase = "Ingredients";
+
+    public static final String dbItemNameColumn = "ItemName";
+
+    public static final String dbItemCatColumn = "ItemCategory";
+
+    public static final String dbRecipeItemNameColumn = "IngredientName";
+
+    public static final String dbRecipeItemCatColumn = "IngredientCategory";
+
     private GroceryCart groceryCart;
 
     private Store selectedStore;
 
-    private Notifications notifications;
-
+    private TextView notificationDialogTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,23 +70,26 @@ public class BeaconAndEggs extends Activity {
 
         setContentView(R.layout.activity_beacon_and_eggs);
 
+        notificationDialogTextView = (TextView) findViewById(R.id.notification);
+
         groceryCart = new GroceryCart(
                 new ItemListDatabaseHelper(
                         getApplicationContext(),
-                        "UserItemList",
-                        "ItemName"
+                        itemDatabase,
+                        dbItemNameColumn,
+                        dbItemCatColumn
                 ),
                 new ItemListDatabaseHelper(
                         getApplicationContext(),
-                        "Ingredients",
-                        "IngredientName"
+                        recipeItemDatabase,
+                        dbRecipeItemNameColumn,
+                        dbRecipeItemCatColumn
                 )
         );
-        // See if we need to add an item from extras.
-        checkToAddItem();
+        // See if we need to add item(s) from extras.
+        checkToAddItems();
 
         final ListView groceryListView = (ListView) findViewById(R.id.groceryListView);
-        notifications = new Notifications();
 
         ListViewAdapter mListViewAdapter = new ListViewAdapter(this, groceryCart);
 
@@ -124,7 +143,14 @@ public class BeaconAndEggs extends Activity {
                     Toast.makeText(
                             getApplicationContext(),
                             currItem.name +
-                                    " already exists in your recipe list!",
+                                    " already exists in your ingredient list!",
+                            Toast.LENGTH_SHORT
+                    ).show();
+                }else{
+                    Toast.makeText(
+                            getApplicationContext(),
+                            currItem.name +
+                                    " has been added your ingredient list!",
                             Toast.LENGTH_SHORT
                     ).show();
                 }
@@ -196,6 +222,8 @@ public class BeaconAndEggs extends Activity {
                 {
                     Item item = new Item();
                     item.name = items.getJSONObject(x).getString("name");
+                    item.categoryID = items.getJSONObject(x).getString("categoryId");
+                    item.categoryName = cat.name;
                     item.id = UUID.fromString(items.getJSONObject(x).getString("id"));
                     item.nutritionFacts = items.getJSONObject(x).getString("nutritionFacts");
                     item.state = State.Available;
@@ -234,6 +262,47 @@ public class BeaconAndEggs extends Activity {
     }
 
     /**
+     * Called when the Notification button is Clicked
+     *
+     * @param view the Button
+     */
+    public void onClickNotifications(View view) {
+        final Dialog dialog = new Dialog(this);
+
+        LinearLayout layout = new LinearLayout(this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+
+        BeaconApplication app = (BeaconApplication) getApplication();
+        String coupons = "";
+        if (!app.notifications.isEmpty()) {
+            for (String coupon : app.notifications) {
+                coupons = coupons + coupon + "\n";
+            }
+        } else {
+            coupons = "There are currently no coupons available.";
+        }
+
+        notificationDialogTextView.setText(Html.fromHtml(coupons));
+        notificationDialogTextView.setVisibility(View.VISIBLE);
+
+        ViewGroup parent = (ViewGroup)notificationDialogTextView.getParent();
+        parent.removeView(notificationDialogTextView);
+
+        layout.addView(notificationDialogTextView);
+
+        dialog.setContentView(layout);
+
+        dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                notificationDialogTextView.setVisibility(View.INVISIBLE);
+            }
+        });
+
+        dialog.show();
+    }
+
+    /**
      * Called when the Done button is Click
      *
      * @param view the Button
@@ -244,10 +313,19 @@ public class BeaconAndEggs extends Activity {
         Intent intent = new Intent(BeaconAndEggs.this, MapLocator.class);
 
         Items items = new Items();
-        items.items = this.groceryCart.items;
+
+        for (Item item : this.groceryCart.items) {
+            OUTERLOOP: for (Category cat : this.selectedStore.availableCategories) {
+                for (Item categoryItem : cat.items) {
+                    if (categoryItem.name.toUpperCase().equals(item.name.toUpperCase()) && !items.items.contains(categoryItem)) {
+                        items.items.add(categoryItem);
+                        break OUTERLOOP;
+                    }
+                }
+            }
+        }
         intent.putExtra("groceryCart", items);
         intent.putExtra("store", this.selectedStore);
-        intent.putExtra("notifications", this.notifications);
         startActivity(intent);
     }
 
@@ -257,9 +335,9 @@ public class BeaconAndEggs extends Activity {
     }
 
      /**
-     * Called when the Menu item for recipe search is clicked
+     * Called when the recipe icon is clicked
      *
-     * @param item recipe search menu item
+     * @param item recipe search view
      */
     public void onClickShowRecipeSearch(View item){
         Intent intent = new Intent(BeaconAndEggs.this, RecipeSearch.class);
@@ -267,19 +345,44 @@ public class BeaconAndEggs extends Activity {
 
     }
 
+
+    //enable adding multiple items
+    private void checkToAddItems() {
+        //See if the new items are being added to the list
+        Bundle extras = getIntent().getExtras();
+        checkToAddItem();
+        if (extras != null) {
+            Items itemsToAdd = (Items)extras.getSerializable("itemsToAdd");
+            if (itemsToAdd == null || itemsToAdd.items == null)
+                return;
+            for(Item item : itemsToAdd.items) {
+                if (item != null) {
+                    if (!groceryCart.addItemToCart(item)) {
+                        Toast.makeText(
+                                getApplicationContext(),
+                                item.name +
+                                        " already exists in your list!",
+                                Toast.LENGTH_SHORT
+                        ).show();
+                    }
+                }
+            }
+        }
+    }
+
     private void checkToAddItem() {
         //See if the new items are being added to the list
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
-            Item itemToAdd = (Item) extras.get("item");
-            if (itemToAdd != null) {
-                if (!groceryCart.addItemToCart(itemToAdd)) {
-                    Toast.makeText(
+            Item item = (Item) extras.get("item");
+            if (item != null) {
+                if (!groceryCart.addItemToCart(item)) {
+                    /*Toast.makeText(
                             getApplicationContext(),
-                            itemToAdd.name +
+                            item.name +
                                     " already exists in your list!",
                             Toast.LENGTH_SHORT
-                    ).show();
+                    ).show();*/
                 }
             }
         }

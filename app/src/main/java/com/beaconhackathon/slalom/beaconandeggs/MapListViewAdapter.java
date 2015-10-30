@@ -1,18 +1,19 @@
 package com.beaconhackathon.slalom.beaconandeggs;
 
 import android.content.Context;
+import android.content.Intent;
+import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import com.beaconhackathon.slalom.beaconandeggs.Models.Item;
 import com.beaconhackathon.slalom.beaconandeggs.Models.State;
 import com.daimajia.swipe.SimpleSwipeListener;
 import com.daimajia.swipe.SwipeLayout;
 import com.daimajia.swipe.adapters.BaseSwipeAdapter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,15 +26,22 @@ public class MapListViewAdapter extends BaseSwipeAdapter {
     private Context mContext;
     private List<Item> _items;
 
+    public List<Item> _filteredItems;
+
     public MapListViewAdapter(Context mContext, List<Item> gc) {
         this.mContext = mContext;
         _items = gc;
+
+        _filteredItems = new ArrayList<>();
+        for (Item item : _items) {
+            if (item.state != State.Checked) {
+                _filteredItems.add(item);
+            }
+        }
     }
 
     @Override
-    public int getSwipeLayoutResourceId(int position) {
-        return R.id.swipeDone;
-    }
+    public int getSwipeLayoutResourceId(int position) { return R.id.swipeDone; }
 
     @Override
     public View generateView(final int position, final ViewGroup parent) {
@@ -44,9 +52,24 @@ public class MapListViewAdapter extends BaseSwipeAdapter {
             @Override
             public void onOpen(SwipeLayout layout) {
 
+                // sanity check
+                if (position >= _filteredItems.size()){
+                    _filteredItems.clear();
+                    notifyDataSetChanged();
+                    closeAllItems();
+                    sendCompleteNotification();
+                    return;
+                }
+
                 // mark as checked
-                Item selectedItem = _items.get(position);
+                Item selectedItem = _filteredItems.get(position);
                 selectedItem.state = State.Checked;
+
+                _filteredItems.remove(position);
+
+                if (_filteredItems.size() == 0) {
+                    sendCompleteNotification();
+                }
 
                 notifyDataSetChanged();
                 closeAllItems();
@@ -55,20 +78,41 @@ public class MapListViewAdapter extends BaseSwipeAdapter {
         return v;
     }
 
+    public void updateItemList(List<Item> gc) {
+        _items = gc;
+
+        _filteredItems.clear();
+        for (Item item : _items) {
+            if (item.state != State.Checked) {
+                _filteredItems.add(item);
+            }
+        }
+
+        notifyDataSetChanged();
+        closeAllItems();
+    }
+
+    // send notification of completed list to the map locator
+    private void sendCompleteNotification() {
+        // send notification of completed list to the map locator
+        Intent intent = new Intent("ListCompleted");
+        LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
+    }
+
     @Override
     public void fillValues(int position, View convertView) {
         TextView t = (TextView)convertView.findViewById(R.id.text_data);
-        t.setText(_items.get(position).name);
+        t.setText(_filteredItems.get(position).name);
     }
 
     @Override
     public int getCount() {
-        return _items.size();
+        return _filteredItems.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return _items.get(position);
+        return _filteredItems.get(position);
     }
 
     @Override

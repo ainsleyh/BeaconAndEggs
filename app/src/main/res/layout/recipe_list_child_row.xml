@@ -3,6 +3,7 @@
     android:layout_height="fill_parent"
     android:layout_width="fill_parent"
     android:orientation="vertical"
+    android:padding="10dp"
     android:id="@+id/recipeListRow" >
      <LinearLayout
             android:layout_width="fill_parent"
@@ -22,6 +23,8 @@
          <TextView
              android:layout_width="fill_parent"
              android:layout_height="wrap_content"
+             android:padding="10dp"
+             android:textSize="16sp"
              android:id="@+id/recipeListRowTime"/>
 
              <RatingBar
@@ -36,10 +39,20 @@
              <TextView
                  android:layout_width="fill_parent"
                  android:layout_height="wrap_content"
-                 android:id="@+id/recipeListRowSourceName"/>
+                 android:id="@+id/recipeListRowSourceName"
+                 android:text="Source Name" />
+
          </LinearLayout>
 
      </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/recipeIngredientListView"
+        android:divider="#FF5534"
+        android:showDividers="beginning|middle|end"></LinearLayout>
 
 
 </LinearLayout>

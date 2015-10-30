@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal"
-    android:id="@+id/ingredientListRow"
-    android:background="#52E3C1"
+    android:id="@+id/recipeIngredientListRow"
     android:layout_width="fill_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:padding="10dp"
+    android:textSize="16sp">
 
     <TextView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Ingredient"
-        android:id="@+id/ingredient_list_row_text"
+        android:id="@+id/recipe_ingredient_list_row_text"
         android:layout_gravity="left"
         android:layout_weight=".9"
-        android:textColor="@color/white"
         android:padding="10dp"
-        android:textSize="14sp"
+        android:textSize="16sp"
         android:gravity="left" />
 
     <ImageButton
@@ -23,8 +23,8 @@
         android:layout_height="fill_parent"
         android:id="@+id/remove_ingredient_row"
         android:layout_weight=".1"
-        android:background="@drawable/trash"
+        android:background="@drawable/add_item_button"
         android:layout_gravity="right"
-        android:onClick="onClickRemoveIngredient"
-        android:clickable="true"/>
+        android:clickable="true"
+        android:onClick="onClickItemToAdd"/>
 </LinearLayout>

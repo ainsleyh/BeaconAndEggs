@@ -1,19 +1,25 @@
 package com.beaconhackathon.slalom.beaconandeggs;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ExpandableListView;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.os.AsyncTask;
+import android.widget.Toast;
 
+import com.beaconhackathon.slalom.beaconandeggs.Models.Item;
+import com.beaconhackathon.slalom.beaconandeggs.Models.Items;
 import com.beaconhackathon.slalom.beaconandeggs.Models.Recipe;
+import com.estimote.sdk.Beacon;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -30,6 +36,7 @@ import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 public class RecipeSearch extends Activity {
 
@@ -38,13 +45,22 @@ public class RecipeSearch extends Activity {
     private ArrayList<String> mIngredientListItems;
     private IngredientListAdapter mIngredientListAdapter;
     private RecipeListAdapter mRecipeListAdapter;
+    private Items mItemsToAdd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setContentView(R.layout.activity_recipe_search);
         super.onCreate(savedInstanceState);
 
-        mIngredientListDB = new ItemListDatabaseHelper(getApplicationContext(),"Ingredients","IngredientName");
+        mIngredientListDB = new ItemListDatabaseHelper(
+                getApplicationContext(),
+                BeaconAndEggs.recipeItemDatabase,
+                BeaconAndEggs.dbRecipeItemNameColumn,
+                BeaconAndEggs.dbRecipeItemCatColumn
+        );
+
+        mItemsToAdd = new Items();
+        mItemsToAdd.items = new ArrayList<>();
 
         ListView ingredientListView = (ListView) findViewById(R.id.ingredientListView);
         mIngredientListItems = fillItemList();
@@ -53,7 +69,6 @@ public class RecipeSearch extends Activity {
                 R.id.ingredientListRow,
                 mIngredientListItems
         );
-        mIngredientListAdapter.setNotifyOnChange(true);
         ingredientListView.setAdapter(mIngredientListAdapter);
 
         ExpandableListView recipeListView = (ExpandableListView) findViewById(R.id.recipeSearchListView);
@@ -64,11 +79,13 @@ public class RecipeSearch extends Activity {
         );
         recipeListView.setAdapter(mRecipeListAdapter);
 
-        SearchView searchView = (SearchView) findViewById(R.id.recipeSearchView);
+        final SearchView searchView = (SearchView) findViewById(R.id.recipeSearchView);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 submitRecipeSearchQuery();
+                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(searchView.getWindowToken(), 0);
                 return true;
             }
 
@@ -109,40 +126,68 @@ public class RecipeSearch extends Activity {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        //call recipe search activity
-        //this functionality may be refactored from the menu
-        if (id==R.id.action_showGroceryCart){
-            onClickShowGroceryCart(item);
-            return true;
-        }
-
         return super.onOptionsItemSelected(item);
     }
 
-    public void onClickShowGroceryCart (MenuItem item){
-        Intent intent = new Intent(this,BeaconAndEggs.class);
-        startActivity(intent);
-
-    }
     public void onClickRemoveIngredient(View v)
     {
         View ingredientRow = (View) v.getParent();
         String ingredientName = (String)((TextView)ingredientRow.findViewById(R.id.ingredient_list_row_text)).getText();
         mIngredientListDB.removeItem(mIngredientListDB.getWritableDatabase(), (String) ingredientName);
-        mIngredientListAdapter = (IngredientListAdapter)((ListView) findViewById(R.id.ingredientListView)).getAdapter();
         mIngredientListAdapter.remove(ingredientName);
-        mIngredientListAdapter.notifyDataSetChanged();
         submitRecipeSearchQuery();
+        Toast.makeText(
+                getApplicationContext(),
+                "removed " + ingredientName + " from ingredient list",
+                Toast.LENGTH_SHORT
+        ).show();
     }
 
-    private void submitRecipeSearchQuery()
+
+    public boolean onClickSubmitSearch(View v)
+    {
+        SearchView searchView = (SearchView) findViewById(R.id.recipeSearchView);
+        submitRecipeSearchQuery();
+        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(searchView.getWindowToken(), 0);
+        return true;
+    }
+
+
+    /**
+     * Called when the header button is Click
+     * Returns to main activity and adds requested ingredients to list
+     *
+     * @param view the Button
+     */
+    public void onClickHeader(View view) {
+
+        // change view to MapLocator
+        Intent intent = new Intent(RecipeSearch.this, BeaconAndEggs.class);
+        intent.putExtra("itemsToAdd", mItemsToAdd);
+        startActivity(intent);
+    }
+
+    /**
+     * Called when the Add for recipe ingredients is clicked
+     *
+     * @param view the Button
+     */
+    public void onClickItemToAdd(View view) {
+        // add item to itemsToAdd to main list
+        Item itemToAdd = new Item();
+        itemToAdd.name = (String) ((TextView)((View)view.getParent()).findViewById(R.id.recipe_ingredient_list_row_text)).getText();
+        mItemsToAdd.items.add(itemToAdd);
+        Toast.makeText(
+                getApplicationContext(),
+                itemToAdd.name +
+                        " will be added your grocery list!",
+                Toast.LENGTH_SHORT
+        ).show();
+    }
+
+
+    public void submitRecipeSearchQuery()
     {
         //search call to api
         String recipeSearchURL = buildRecipeSearchURL();
@@ -155,7 +200,7 @@ public class RecipeSearch extends Activity {
 
         SearchView searchView = (SearchView) findViewById(R.id.recipeSearchView);
         try {
-            recipeSearchUrl+="q="+ URLEncoder.encode(searchView.getQuery().toString(), "UTF-8");
+            recipeSearchUrl+="q="+ URLEncoder.encode(searchView.getQuery().toString(), "UTF-8")+"&requirePictures=true";
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -178,7 +223,6 @@ public class RecipeSearch extends Activity {
                     Recipe recipeResult = new Recipe(currentRecipe);
                     mRecipeListAdapter.add(recipeResult);
                 }
-//                mRecipeListAdapter.notifyDataSetChanged();
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -251,5 +295,6 @@ public class RecipeSearch extends Activity {
             processRecipeJson(resultString);
         }
     }
+
 
 }
