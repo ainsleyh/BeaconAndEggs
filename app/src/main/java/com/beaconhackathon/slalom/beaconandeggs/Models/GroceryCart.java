@@ -4,6 +4,7 @@ import android.database.Cursor;
 import com.beaconhackathon.slalom.beaconandeggs.ItemListDatabaseHelper;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -20,6 +21,8 @@ public class GroceryCart implements Serializable, Iterable<Item> {
      */
     public List<Item> items;
 
+    public HashMap<String, ArrayList<Item>> itemMap;
+
     private ItemListDatabaseHelper itemDatabase;
 
     private ItemListDatabaseHelper recipeDatabase;
@@ -28,6 +31,7 @@ public class GroceryCart implements Serializable, Iterable<Item> {
                        ItemListDatabaseHelper theRecipeDatabase) {
         itemDatabase = theItemDatabase;
         recipeDatabase = theRecipeDatabase;
+        itemMap = new HashMap<>();
         items = fillItemList();
     }
 
@@ -42,8 +46,16 @@ public class GroceryCart implements Serializable, Iterable<Item> {
             items.add(theItem);
             itemDatabase.insertItem(
                     itemDatabase.getWritableDatabase(),
-                    theItem.name
+                    theItem
             );
+            if (itemMap.get(theItem.categoryName) == null) {
+                itemMap.put(
+                        theItem.categoryName,
+                        new ArrayList<Item>()
+                );
+            } else {
+                itemMap.get(theItem.categoryName).add(theItem);
+            }
             return true;
         } else {
             return false;
@@ -57,7 +69,7 @@ public class GroceryCart implements Serializable, Iterable<Item> {
                 ) {
             recipeDatabase.insertItem(
                     recipeDatabase.getWritableDatabase(),
-                    theItem.name
+                    theItem
                     );
             return true;
         } else {
@@ -88,7 +100,7 @@ public class GroceryCart implements Serializable, Iterable<Item> {
     }
 
     public Iterator<Item> iterator() {
-        return new ReadOnlyGroceryCartIterator(items);
+        return new ReadOnlyGroceryCartIterator(flattenMap());
     }
 
     public void removeAtIndex(int theIndex) {
@@ -98,7 +110,6 @@ public class GroceryCart implements Serializable, Iterable<Item> {
         items.remove(theIndex);
     }
 
-
     private ArrayList<Item> fillItemList() {
         LinkedList<Item> items = new LinkedList<>();
         Cursor itemsCursor = itemDatabase.getAllItems(
@@ -106,17 +117,36 @@ public class GroceryCart implements Serializable, Iterable<Item> {
         );
         itemsCursor.moveToFirst();
         while (!itemsCursor.isAfterLast()) {
-            items.add(
-                    new Item(
-                            itemsCursor.getString(0),
-                            null,
-                            null
-                    )
+            Item itemToAdd = new Item(
+                    itemsCursor.getString(0),
+                    null,
+                    null,
+                    itemsCursor.getString(1)
             );
+            items.add(itemToAdd);
+            if (itemMap.get(itemToAdd.categoryName) == null) {
+                itemMap.put(
+                        itemToAdd.categoryName,
+                        new ArrayList<Item>()
+                );
+            } else {
+             itemMap.get(itemToAdd.categoryName).add(itemToAdd);
+            }
             itemsCursor.moveToNext();
         }
         return new ArrayList<>(items);
     }
+
+    private ArrayList<Item> flattenMap() {
+        ArrayList<Item> flattened = new ArrayList<>();
+        for (ArrayList<Item> valueItems : itemMap.values()) {
+            for (Item i : valueItems) {
+                flattened.add(i);
+            }
+        }
+        return flattened;
+    }
+
 }
 
 class ReadOnlyGroceryCartIterator implements Iterator<Item> {

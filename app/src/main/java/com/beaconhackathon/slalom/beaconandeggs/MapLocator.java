@@ -208,22 +208,31 @@ public class MapLocator extends Activity {
         @Override
         public void onReceive(Context context, Intent intent) {
             // either move to next category or move to done screen
-            if (selectedCategory == null)
+            if (selectedCategory == null && rangingBeaconManager != null)
                 return;
+
+            if (selectedCategory == null && rangingBeaconManager == null)
+                goToPurchasedView();
 
             selectedCategories.remove(selectedCategory);
             selectedCategory = null;
 
             if (selectedCategories.isEmpty()) {
-                // TODO go to done screen
+                //  go to done screen
+                goToPurchasedView();
             } else {
                 // change color
                 TextView text = (TextView) findViewById(R.id.textView2);
                 text.setText("calculating...");
             }
-
         }
     };
+
+    private void goToPurchasedView() {
+        Intent intent2 = new Intent(MapLocator.this, PurchaseItems.class);
+        intent2.putExtra("items", groceryCart);
+        startActivity(intent2);
+    }
 
     /**
      * Returns the categories of the items in the listview
@@ -237,7 +246,7 @@ public class MapLocator extends Activity {
         for (Item item : groceryCart.items) {
             Category itemCategory = null;
             for (Category category : store.availableCategories) {
-                if (category.id.equals(item.categoryID)) {
+                if (category.id.toString().equals(item.categoryID)) {
                     itemCategory = category;
                     break;
                 }
