@@ -5,24 +5,15 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.BaseAdapter;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.SearchView;
 import com.beaconhackathon.slalom.beaconandeggs.Models.Categories;
 import com.beaconhackathon.slalom.beaconandeggs.Models.Category;
 import com.beaconhackathon.slalom.beaconandeggs.Models.Item;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.StringWriter;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -74,18 +65,6 @@ public class ItemSearch extends ListActivity {
         Item item = (Item)adapter.getItem(position);
         Intent myintent = new Intent(ItemSearch.this, BeaconAndEggs.class).putExtra("item", item);
         startActivity(myintent);
-    }
-
-    public void subtractNumber(View view) {
-        int position = getListView().getPositionForView((RelativeLayout) view.getParent());
-        Item item = (Item)adapter.getItem(position);
-        item.quantity--;
-    }
-
-    public void addNumber(View view) {
-        int position = getListView().getPositionForView((RelativeLayout) view.getParent());
-        Item item = (Item)adapter.getItem(position);
-        item.quantity++;
     }
 
     private void getItems() {
