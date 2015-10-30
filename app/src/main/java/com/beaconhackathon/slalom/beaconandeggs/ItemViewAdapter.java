@@ -59,6 +59,7 @@ public class ItemViewAdapter extends BaseAdapter {
         Item currentItem = getItem(position);
 
         mViewHolder.name.setText(currentItem.name);
+        mViewHolder.category.setText(currentItem.categoryName);
         mViewHolder.quantity.setValue(currentItem.quantity);
         mViewHolder.position = position;
 
@@ -69,13 +70,15 @@ public class ItemViewAdapter extends BaseAdapter {
         TextView name;
         NumberPicker quantity;
         int position;
+        TextView category;
 
         public MyViewHolder(View item, int position) {
             this.position = position;
             name = (TextView) item.findViewById(R.id.item);
+            category = (TextView) item.findViewById(R.id.category);
             quantity = (NumberPicker) item.findViewById(R.id.quantity);
             quantity.setMinValue(0);
-            quantity.setMaxValue(10);
+            quantity.setMaxValue(20);
             quantity.setWrapSelectorWheel(true);
             quantity.setOnValueChangedListener(this);
         }
