@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ExpandableListView;
 import android.widget.ListView;
@@ -41,16 +43,36 @@ import java.util.List;
 public class RecipeSearch extends Activity {
 
 
+
     private ItemListDatabaseHelper mIngredientListDB;
+    private ItemListDatabaseHelper mItemListDB;
     private ArrayList<String> mIngredientListItems;
     private IngredientListAdapter mIngredientListAdapter;
     private RecipeListAdapter mRecipeListAdapter;
-    private Items mItemsToAdd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setContentView(R.layout.activity_recipe_search);
         super.onCreate(savedInstanceState);
+
+        //Remove title bar
+        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+
+        //Remove notification bar
+        this.getWindow().setFlags(
+                WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN
+        );
+
+
+        setContentView(R.layout.activity_recipe_search);
+
+        mItemListDB = new ItemListDatabaseHelper(
+                getApplicationContext(),
+                BeaconAndEggs.itemDatabase,
+                BeaconAndEggs.dbItemNameColumn,
+                BeaconAndEggs.dbItemCatColumn
+        );
+
 
         mIngredientListDB = new ItemListDatabaseHelper(
                 getApplicationContext(),
@@ -58,9 +80,6 @@ public class RecipeSearch extends Activity {
                 BeaconAndEggs.dbRecipeItemNameColumn,
                 BeaconAndEggs.dbRecipeItemCatColumn
         );
-
-        mItemsToAdd = new Items();
-        mItemsToAdd.items = new ArrayList<>();
 
         ListView ingredientListView = (ListView) findViewById(R.id.ingredientListView);
         mIngredientListItems = fillItemList();
@@ -164,7 +183,6 @@ public class RecipeSearch extends Activity {
 
         // change view to MapLocator
         Intent intent = new Intent(RecipeSearch.this, BeaconAndEggs.class);
-        intent.putExtra("itemsToAdd", mItemsToAdd);
         startActivity(intent);
     }
 
@@ -177,11 +195,11 @@ public class RecipeSearch extends Activity {
         // add item to itemsToAdd to main list
         Item itemToAdd = new Item();
         itemToAdd.name = (String) ((TextView)((View)view.getParent()).findViewById(R.id.recipe_ingredient_list_row_text)).getText();
-        mItemsToAdd.items.add(itemToAdd);
+        mItemListDB.insertItem(mItemListDB.getWritableDatabase(),itemToAdd);
         Toast.makeText(
                 getApplicationContext(),
                 itemToAdd.name +
-                        " will be added your grocery list!",
+                        " has been added your grocery list!",
                 Toast.LENGTH_SHORT
         ).show();
     }
